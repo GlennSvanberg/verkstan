@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+:root {
+  --verkstan-midnight: #00002c;
+  --verkstan-vanilla: #fffee8;
+  --verkstan-purple: #9a4dff;
+  --verkstan-purple-soft: #c59dff;
+  --verkstan-border: #2c2370;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #1b1363, var(--verkstan-midnight) 56%);
+  color: var(--verkstan-vanilla);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  border: 1px solid var(--verkstan-border);
+  border-radius: 6px;
+  background: rgba(0, 0, 44, 0.55);
+  padding: 0.1rem 0.35rem;
+}
+
+.shell-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-header {
+  border-bottom: 1px solid var(--verkstan-border);
+  background: rgba(0, 0, 44, 0.85);
+  backdrop-filter: blur(6px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.shell-inner {
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand-link {
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.shell-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.shell-nav-link {
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--verkstan-purple-soft);
+  padding: 0.4rem 0.8rem;
+  transition: 160ms ease;
+}
+
+.shell-nav-link:hover,
+.shell-nav-link.active {
+  border-color: var(--verkstan-border);
+  color: var(--verkstan-vanilla);
+  background: rgba(154, 77, 255, 0.2);
+}
+
+.shell-main {
+  flex: 1;
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+.page-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid var(--verkstan-border);
+  border-radius: 16px;
+  padding: 1.1rem;
+  background: rgba(0, 0, 44, 0.5);
+}
+
+.card h1,
+.card h2,
+.card h3 {
+  margin: 0;
+}
+
+.card h1 {
+  margin-top: 0.25rem;
+  font-size: clamp(1.75rem, 4vw, 2.2rem);
+}
+
+.card p {
+  margin: 0.6rem 0 0;
+  line-height: 1.5;
+}
+
+.kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.73rem;
+  color: var(--verkstan-purple-soft);
+}
+
+.app-list,
+.note-list {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.app-list-item,
+.note-list-item {
+  border: 1px solid var(--verkstan-border);
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: rgba(154, 77, 255, 0.08);
+}
+
+.app-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.app-list-item p,
+.note-list-item p {
+  margin: 0.45rem 0 0;
+}
+
+.action-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--verkstan-purple);
+  border-radius: 10px;
+  background: var(--verkstan-purple);
+  color: var(--verkstan-vanilla);
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.action-link:hover {
+  filter: brightness(1.08);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.field-label {
+  font-weight: 600;
+}
+
+.text-input {
+  width: 100%;
+  border: 1px solid var(--verkstan-border);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  background: rgba(0, 0, 44, 0.85);
+  color: var(--verkstan-vanilla);
+  resize: vertical;
+}
+
+.text-input:focus {
+  outline: 2px solid rgba(154, 77, 255, 0.6);
+  outline-offset: 1px;
+}
+
+.note-list-item time {
+  display: block;
+  margin-top: 0.55rem;
+  color: var(--verkstan-purple-soft);
+  font-size: 0.78rem;
+}
