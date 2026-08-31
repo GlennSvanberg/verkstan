@@ -1,38 +1,44 @@
 # AGENTS.md
 
-## Verkstan-konventioner
+## Verkstan conventions
 
-Detta repo är en miniapp-workbench med TanStack Start + Convex.
+This repository is a miniapp workbench built with TanStack Start + Convex.
 
-### Miniapp-kontrakt (måste följas)
+### Shipping (hard rule)
 
-En miniapp är alltid tre delar:
+- Ship by merging to `main`. Do not leave draft PRs. Do not wait for Glenn to review or click Merge.
+- If the workflow creates a PR, mark it ready and merge it yourself in the same run (`gh pr merge --merge` is fine). Wait only if GitHub blocks on required CI; otherwise merge even if optional Vercel preview checks are still pending.
+- Prefer not creating draft PRs at all.
+
+### Miniapp contract (must follow)
+
+A miniapp is always three parts:
 
 1. Routes under `src/routes/apps/<slug>/`
-2. Convex-funktioner/tabeller med prefix `<slug>_`
-3. Registrering i `src/lib/app-registry.ts`
+2. Convex functions/tables with prefix `<slug>_`
+3. Registration in `src/lib/app-registry.ts`
 
-### Hårda regler
+### Hard rules
 
-- Lägg till ny app genom route-mapp + namespaced Convex.
-- Ändra aldrig annan apps tabeller eller routes.
-- Restyla inte hela shell/layout för en enskild app.
-- Delad layout/nav: `src/routes/__root.tsx`
-- Delad styling: `src/styles.css`
-- Engelska i kod. Svenska i all användarsynlig UI-text.
+- Add new apps via a route folder + namespaced Convex.
+- Never modify another app's tables or routes.
+- Do not restyle the whole shell/layout for a single app.
+- Shared layout/nav: `src/routes/__root.tsx`
+- Shared styling: `src/styles.css`
+- English in code. Swedish in all user-facing UI text.
 
 ### Convex
 
-- Använd utvecklingsflödet med `npx convex dev`.
-- Om länkning saknas, använd:
+- Use the development workflow with `npx convex dev`.
+- If linking is missing, use:
   ```bash
   CONVEX_OPEN_DEV=true npx convex dev
   ```
-- Använd inte `CONVEX_AGENT_MODE=anonymous` för detta repo.
+- Do not use `CONVEX_AGENT_MODE=anonymous` for this repo.
 
 ### Production note
 
-- När `CONVEX_DEPLOY_KEY` finns i produktionsmiljön:
+- When `CONVEX_DEPLOY_KEY` exists in production:
   ```bash
   npx convex deploy --cmd 'npm run build'
   ```
