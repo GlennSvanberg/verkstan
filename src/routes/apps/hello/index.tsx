@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { api } from "../../../../convex/_generated/api";
@@ -7,6 +7,8 @@ import { convexConfigured } from "../../../lib/convex-client";
 export const Route = createFileRoute("/apps/hello/")({
   component: HelloRoute,
 });
+
+const HELLO_OWNER_TOKEN_STORAGE_KEY = "verkstan.hello.ownerToken";
 
 function HelloRoute() {
   if (!convexConfigured) {
@@ -29,7 +31,26 @@ function HelloRoute() {
 
 function HelloNotesApp() {
   const [newNote, setNewNote] = useState("");
-  const notes = useQuery(api.hello.hello_listNotes);
+  const [ownerToken, setOwnerToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const existingToken = window.localStorage.getItem(HELLO_OWNER_TOKEN_STORAGE_KEY);
+    if (existingToken) {
+      setOwnerToken(existingToken);
+      return;
+    }
+
+    const generatedToken =
+      globalThis.crypto?.randomUUID?.() ??
+      `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    window.localStorage.setItem(HELLO_OWNER_TOKEN_STORAGE_KEY, generatedToken);
+    setOwnerToken(generatedToken);
+  }, []);
+
+  const notes = useQuery(
+    api.hello.hello_listNotes,
+    ownerToken ? { ownerToken } : "skip",
+  );
   const addNote = useMutation(api.hello.hello_addNote);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -39,7 +60,11 @@ function HelloNotesApp() {
       return;
     }
 
-    await addNote({ text: trimmed });
+    if (!ownerToken) {
+      return;
+    }
+
+    await addNote({ ownerToken, text: trimmed });
     setNewNote("");
   }
 
@@ -72,7 +97,7 @@ function HelloNotesApp() {
 
       <div className="card">
         <h2>Senaste anteckningar</h2>
-        {!notes ? (
+        {!ownerToken || !notes ? (
           <p>Laddar...</p>
         ) : notes.length === 0 ? (
           <p>Inga anteckningar ännu.</p>
