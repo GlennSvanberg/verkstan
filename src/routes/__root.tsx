@@ -1,12 +1,33 @@
-import { HeadContent, Link, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Link, Scripts, createRootRoute, redirect } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ConvexProvider } from "convex/react";
+import { findMiniappByPath } from "../lib/app-registry";
 import { convexClient } from "../lib/convex-client";
+import { checkMiniappGateAccess } from "../lib/miniapp-gate.functions";
 
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    const miniapp = findMiniappByPath(location.pathname);
+    if (!miniapp?.isLocked) {
+      return;
+    }
+
+    const gateResult = await checkMiniappGateAccess({ data: { pathname: location.pathname } });
+    if (gateResult.allowed) {
+      return;
+    }
+
+    throw redirect({
+      to: "/las",
+      search: {
+        till: location.pathname,
+        reason: gateResult.reason,
+      },
+    });
+  },
   head: () => ({
     meta: [
       {

@@ -3,6 +3,7 @@ export type MiniappDefinition = {
   name: string;
   summary: string;
   route: `/apps/${string}`;
+  isLocked?: boolean;
 };
 
 export const appRegistry: ReadonlyArray<MiniappDefinition> = [
@@ -12,4 +13,26 @@ export const appRegistry: ReadonlyArray<MiniappDefinition> = [
     summary: "Bevisapp som sparar anteckningar med Convex.",
     route: "/apps/hello",
   },
+  {
+    slug: "valv",
+    name: "Valv",
+    summary: "Låst demo-miniapp för små hemligheter.",
+    route: "/apps/valv",
+    isLocked: true,
+  },
 ];
+
+function normalizePath(pathname: string): string {
+  if (pathname === "/") {
+    return pathname;
+  }
+  return pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+}
+
+export function findMiniappByPath(pathname: string): MiniappDefinition | undefined {
+  const normalizedPath = normalizePath(pathname);
+  return appRegistry.find((miniapp) => {
+    const normalizedRoute = normalizePath(miniapp.route);
+    return normalizedPath === normalizedRoute || normalizedPath.startsWith(`${normalizedRoute}/`);
+  });
+}

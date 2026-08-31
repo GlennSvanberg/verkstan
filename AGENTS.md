@@ -26,6 +26,8 @@ A miniapp is always three parts:
 - Shared layout/nav: `src/routes/__root.tsx`
 - Shared styling: `src/styles.css`
 - English in code. Swedish in all user-facing UI text.
+- For secret miniapps, set `isLocked: true` in `src/lib/app-registry.ts`.
+- Shared gate password is only `VERKSTAN_GATE_PASSWORD` (set in Vercel Preview + Production).
 
 ### Convex
 

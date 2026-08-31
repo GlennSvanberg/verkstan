@@ -22,10 +22,13 @@ function HomePage() {
           {appRegistry.map((app) => (
             <li key={app.slug} className="app-list-item">
               <div>
-                <h3>{app.name}</h3>
+                <h3>
+                  {app.name}
+                  {app.isLocked ? <span className="app-lock-pill">Låst</span> : null}
+                </h3>
                 <p>{app.summary}</p>
               </div>
-              <Link to={app.route} className="action-link">
+              <Link to={app.route as never} className="action-link">
                 Öppna
               </Link>
             </li>
