@@ -35,6 +35,7 @@ code {
   border-radius: 6px;
   background: rgba(0, 0, 44, 0.55);
   padding: 0.1rem 0.35rem;
+  overflow-wrap: anywhere;
 }
 
 .shell-root {
@@ -53,13 +54,14 @@ code {
 }
 
 .shell-inner {
-  width: min(980px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 1rem 0;
+  width: 100%;
+  margin: 0;
+  padding: 1rem clamp(1rem, 2.6vw, 2.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .brand-link {
@@ -72,6 +74,7 @@ code {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .shell-nav-link {
@@ -92,9 +95,9 @@ code {
 
 .shell-main {
   flex: 1;
-  width: min(980px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 1.5rem 0 3rem;
+  width: 100%;
+  margin: 0;
+  padding: 1.5rem clamp(1rem, 2.6vw, 2.5rem) 3rem;
 }
 
 .page-column {
@@ -233,4 +236,23 @@ code {
   margin-top: 0.55rem;
   color: var(--verkstan-purple-soft);
   font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .shell-inner {
+    padding-inline: 1rem;
+  }
+
+  .shell-main {
+    padding-inline: 1rem;
+  }
+
+  .app-list-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-list-item .action-link {
+    width: 100%;
+  }
 }
