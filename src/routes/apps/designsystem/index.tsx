@@ -13,11 +13,26 @@ type ProductSkin = {
   id: ProductSkinId;
   label: string;
   primary: string;
-  primarySoft: string;
+  primarySoftLight: string;
+  primarySoftDark: string;
   primaryStrong: string;
   infoColor: string;
-  infoSoft: string;
+  infoSoftLight: string;
+  infoSoftDark: string;
   note: string;
+};
+
+type ThemeTokens = {
+  bgApp: string;
+  bgSubtle: string;
+  bgMuted: string;
+  bgInverse: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  textOnInverse: string;
+  borderDefault: string;
+  borderStrong: string;
 };
 
 const skinStorageKey = "verkstan.designsystem.skin";
@@ -28,45 +43,38 @@ const productSkins: ReadonlyArray<ProductSkin> = [
     id: "inteller",
     label: "Inteller",
     primary: "#47FF9A",
-    primarySoft: "#DAFFEC",
+    primarySoftLight: "#DAFFEC",
+    primarySoftDark: "#133726",
     primaryStrong: "#27CC73",
     infoColor: "#1FFFF8",
-    infoSoft: "#CBFFFD",
+    infoSoftLight: "#CBFFFD",
+    infoSoftDark: "#163640",
     note: "Mint är primär. Orange diamant (#F36F16) är mark, inte CTA.",
   },
   {
     id: "onboarder",
     label: "Onboarder",
     primary: "#1FFFF8",
-    primarySoft: "#D3FFFD",
+    primarySoftLight: "#D3FFFD",
+    primarySoftDark: "#153742",
     primaryStrong: "#12CCC6",
     infoColor: "#9A4DFF",
-    infoSoft: "#E9DBFF",
+    infoSoftLight: "#E9DBFF",
+    infoSoftDark: "#2E214A",
     note: "Teal är primär. Info byter till lila för tydlig status-separation.",
   },
   {
     id: "shortcut",
     label: "Shortcut",
     primary: "#9A4DFF",
-    primarySoft: "#ECDFFF",
+    primarySoftLight: "#ECDFFF",
+    primarySoftDark: "#2B2144",
     primaryStrong: "#7D2EE8",
     infoColor: "#1FFFF8",
-    infoSoft: "#CBFFFD",
+    infoSoftLight: "#CBFFFD",
+    infoSoftDark: "#163640",
     note: "Lila är primär för Shortcut och fallback för nya appar.",
   },
-];
-
-const neutralTokens: ReadonlyArray<{ token: string; value: string }> = [
-  { token: "bg.app", value: "#FFFFFF" },
-  { token: "bg.subtle", value: "#F7F7F2" },
-  { token: "bg.muted", value: "#EEEEE6" },
-  { token: "bg.inverse", value: "#00002C" },
-  { token: "text.primary", value: "#00002C" },
-  { token: "text.secondary", value: "#4A4A5C" },
-  { token: "text.muted", value: "#8A8A96" },
-  { token: "text.on-inverse", value: "#FFFEE8" },
-  { token: "border.default", value: "#E2E2DA" },
-  { token: "border.strong", value: "#C8C8BE" },
 ];
 
 const accentTokens: ReadonlyArray<{ token: string; value: string }> = [
@@ -77,6 +85,32 @@ const accentTokens: ReadonlyArray<{ token: string; value: string }> = [
   { token: "pink", value: "#E788CE" },
   { token: "yellow", value: "#F3F316" },
 ];
+
+const lightThemeTokens: ThemeTokens = {
+  bgApp: "#FFFFFF",
+  bgSubtle: "#F7F7F2",
+  bgMuted: "#EEEEE6",
+  bgInverse: "#00002C",
+  textPrimary: "#00002C",
+  textSecondary: "#4A4A5C",
+  textMuted: "#8A8A96",
+  textOnInverse: "#FFFEE8",
+  borderDefault: "#E2E2DA",
+  borderStrong: "#C8C8BE",
+};
+
+const darkThemeTokens: ThemeTokens = {
+  bgApp: "#0B0F1A",
+  bgSubtle: "#111827",
+  bgMuted: "#1F2937",
+  bgInverse: "#F8FAFC",
+  textPrimary: "#ECF0F8",
+  textSecondary: "#CBD5E1",
+  textMuted: "#9CA3B6",
+  textOnInverse: "#FFFEE8",
+  borderDefault: "#273449",
+  borderStrong: "#334155",
+};
 
 function DesignSystemRoute() {
   const [activeSkin, setActiveSkin] = useState<ProductSkinId>("shortcut");
@@ -110,20 +144,54 @@ function DesignSystemRoute() {
   const infoStatusToken =
     skin.id === "onboarder" ? "status.info (lila fallback)" : "status.info (teal)";
 
+  const themeTokens = canvasTheme === "dark" ? darkThemeTokens : lightThemeTokens;
+  const isDarkTheme = canvasTheme === "dark";
+  const productPrimarySoft = isDarkTheme ? skin.primarySoftDark : skin.primarySoftLight;
+  const statusInfoSoft = isDarkTheme ? skin.infoSoftDark : skin.infoSoftLight;
+  const statusSuccessSoft = isDarkTheme ? "#163726" : "#DAFFEC";
+  const statusWarningSoft = isDarkTheme ? "#3A3715" : "#F8F7C9";
+  const statusDangerSoft = isDarkTheme ? "#3A1725" : "#FBD5DF";
+
   const skinVariables = {
+    "--bg-app": themeTokens.bgApp,
+    "--bg-subtle": themeTokens.bgSubtle,
+    "--bg-muted": themeTokens.bgMuted,
+    "--bg-inverse": themeTokens.bgInverse,
+    "--text-primary": themeTokens.textPrimary,
+    "--text-secondary": themeTokens.textSecondary,
+    "--text-muted": themeTokens.textMuted,
+    "--text-on-inverse": themeTokens.textOnInverse,
+    "--border-default": themeTokens.borderDefault,
+    "--border-strong": themeTokens.borderStrong,
     "--product-primary": skin.primary,
-    "--product-primary-soft": skin.primarySoft,
+    "--product-primary-soft": productPrimarySoft,
     "--product-primary-strong": skin.primaryStrong,
     "--status-success": "#47FF9A",
+    "--status-success-soft": statusSuccessSoft,
     "--status-warning": "#F3F316",
+    "--status-warning-soft": statusWarningSoft,
     "--status-danger": "#E11D48",
+    "--status-danger-soft": statusDangerSoft,
     "--status-info": skin.infoColor,
-    "--status-info-soft": skin.infoSoft,
+    "--status-info-soft": statusInfoSoft,
     "--text-on-accent": "#00002C",
   } as CSSProperties;
 
+  const neutralTokens: ReadonlyArray<{ token: string; value: string }> = [
+    { token: "bg.app", value: themeTokens.bgApp },
+    { token: "bg.subtle", value: themeTokens.bgSubtle },
+    { token: "bg.muted", value: themeTokens.bgMuted },
+    { token: "bg.inverse", value: themeTokens.bgInverse },
+    { token: "text.primary", value: themeTokens.textPrimary },
+    { token: "text.secondary", value: themeTokens.textSecondary },
+    { token: "text.muted", value: themeTokens.textMuted },
+    { token: "text.on-inverse", value: themeTokens.textOnInverse },
+    { token: "border.default", value: themeTokens.borderDefault },
+    { token: "border.strong", value: themeTokens.borderStrong },
+  ];
+
   const primaryScaleTokens: ReadonlyArray<{ token: string; value: string }> = [
-    { token: "primary.soft", value: skin.primarySoft },
+    { token: "primary.soft", value: productPrimarySoft },
     { token: "primary.solid", value: skin.primary },
     { token: "primary.strong", value: skin.primaryStrong },
   ];
@@ -135,8 +203,8 @@ function DesignSystemRoute() {
   ];
 
   return (
-    <section className={styles.showcaseRoot}>
-      <div className={styles.showcaseCanvas} data-theme={canvasTheme} style={skinVariables}>
+    <section className={styles.workspaceRoot} data-theme={canvasTheme} style={skinVariables}>
+      <div className={styles.workspaceInner}>
         <header className={styles.panel}>
           <p className={styles.kicker}>Fiwe Product Design System</p>
           <div className={styles.headerTitleRow}>
@@ -210,7 +278,7 @@ function DesignSystemRoute() {
         <section className={styles.panel}>
           <h2>Färgpalett</h2>
           <div className={styles.paletteGrid}>
-            <ColorColumn title="Core neutrals" tokens={neutralTokens} />
+            <ColorColumn title="Core neutrals (aktivt tema)" tokens={neutralTokens} />
             <ColorColumn title="Brand accents" tokens={accentTokens} />
             <ColorColumn title={`Aktiv primärskala (${skin.label})`} tokens={primaryScaleTokens} />
             <ColorColumn title="Status" tokens={statusScaleTokens} />
@@ -221,9 +289,9 @@ function DesignSystemRoute() {
           <h2>Typografi</h2>
           <p className={styles.typographyMeta}>Rethink Sans (Regular / Medium / Bold) med Inter som fallback.</p>
           <div className={styles.typographyStack}>
-            <p className={styles.textDisplay}>Display / 40</p>
-            <p className={styles.textTitle}>Title / 32</p>
-            <p className={styles.textHeading}>Heading / 24</p>
+            <p className={styles.textDisplay}>Display / 36</p>
+            <p className={styles.textTitle}>Title / 28</p>
+            <p className={styles.textHeading}>Heading / 22</p>
             <p className={styles.textBody}>
               Body / 16 — Produktgränssnittets standardtext för arbetsytor och paneler.
             </p>
@@ -339,7 +407,7 @@ function DesignSystemRoute() {
                 <li>Orange diamant är Fiwe-markering, inte generell primär knappfärg.</li>
                 <li>Danger är alltid separat röd (inte samma som produktens primärfärg).</li>
                 <li>Ikoner: Fiwe-mark i produktytor, Lucide går bra för CRUD-gränssnitt.</li>
-                <li>Spacing följer 4-pt-system. Radius: 8 för controls, 12-16 för paneler.</li>
+                <li>Spacing följer 4-pt-system. Radius: 6-8 för controls, 8-10 för paneler.</li>
                 <li>Nyare Fiwe-appar byggs i TanStack Start; Onboarder/Inteller kör Next+shadcn idag.</li>
               </ul>
             </div>
