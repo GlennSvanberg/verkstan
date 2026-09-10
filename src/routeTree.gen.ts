@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LasRouteImport } from './routes/las'
+import { Route as AppsDesignsystemIndexRouteImport } from './routes/apps/designsystem/index'
 import { Route as AppsHelloIndexRouteImport } from './routes/apps/hello/index'
 import { Route as AppsValvIndexRouteImport } from './routes/apps/valv/index'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const LasRoute = LasRouteImport.update({
   id: '/las',
   path: '/las',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppsDesignsystemIndexRoute = AppsDesignsystemIndexRouteImport.update({
+  id: '/apps/designsystem/',
+  path: '/apps/designsystem/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppsHelloIndexRoute = AppsHelloIndexRouteImport.update({
@@ -38,12 +44,14 @@ const AppsValvIndexRoute = AppsValvIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/las': typeof LasRoute
+  '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/las': typeof LasRoute
+  '/apps/designsystem': typeof AppsDesignsystemIndexRoute
   '/apps/hello': typeof AppsHelloIndexRoute
   '/apps/valv': typeof AppsValvIndexRoute
 }
@@ -51,20 +59,29 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/las': typeof LasRoute
+  '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/las' | '/apps/hello/' | '/apps/valv/'
+  fullPaths:
+    '/' | '/las' | '/apps/designsystem/' | '/apps/hello/' | '/apps/valv/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/las' | '/apps/hello' | '/apps/valv'
-  id: '__root__' | '/' | '/las' | '/apps/hello/' | '/apps/valv/'
+  to: '/' | '/las' | '/apps/designsystem' | '/apps/hello' | '/apps/valv'
+  id:
+    | '__root__'
+    | '/'
+    | '/las'
+    | '/apps/designsystem/'
+    | '/apps/hello/'
+    | '/apps/valv/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LasRoute: typeof LasRoute
+  AppsDesignsystemIndexRoute: typeof AppsDesignsystemIndexRoute
   AppsHelloIndexRoute: typeof AppsHelloIndexRoute
   AppsValvIndexRoute: typeof AppsValvIndexRoute
 }
@@ -83,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/las'
       fullPath: '/las'
       preLoaderRoute: typeof LasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps/designsystem/': {
+      id: '/apps/designsystem/'
+      path: '/apps/designsystem'
+      fullPath: '/apps/designsystem/'
+      preLoaderRoute: typeof AppsDesignsystemIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apps/hello/': {
@@ -105,6 +129,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LasRoute: LasRoute,
+  AppsDesignsystemIndexRoute: AppsDesignsystemIndexRoute,
   AppsHelloIndexRoute: AppsHelloIndexRoute,
   AppsValvIndexRoute: AppsValvIndexRoute,
 }

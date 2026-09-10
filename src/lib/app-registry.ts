@@ -14,6 +14,13 @@ export const appRegistry: ReadonlyArray<MiniappDefinition> = [
     route: "/apps/hello",
   },
   {
+    slug: "designsystem",
+    name: "Designsystem",
+    summary: "Fiwe product UI — tokens, komponenter och theme switcher.",
+    route: "/apps/designsystem",
+    isLocked: false,
+  },
+  {
     slug: "valv",
     name: "Valv",
     summary: "Låst demo-miniapp för små hemligheter.",
