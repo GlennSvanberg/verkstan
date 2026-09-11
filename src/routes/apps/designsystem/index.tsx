@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  AlertTriangle,
   ArrowUpDown,
   Bell,
-  Check,
   ChevronDown,
   Eye,
   Home,
@@ -14,7 +14,6 @@ import {
   Save,
   Search,
   Settings,
-  X,
 } from "lucide-react";
 import styles from "./index.module.css";
 
@@ -63,24 +62,9 @@ const primaryModeStorageKey = "verkstan.designsystem.primarymode";
 const customPrimaryStorageKey = "verkstan.designsystem.customprimary";
 
 const productSkins: ReadonlyArray<ProductSkin> = [
-  {
-    id: "inteller",
-    label: "Inteller",
-    primary: "#47FF9A",
-    infoColor: "#1FFFF8",
-  },
-  {
-    id: "onboarder",
-    label: "Onboarder",
-    primary: "#1FFFF8",
-    infoColor: "#9A4DFF",
-  },
-  {
-    id: "shortcut",
-    label: "Shortcut",
-    primary: "#9A4DFF",
-    infoColor: "#1FFFF8",
-  },
+  { id: "inteller", label: "Inteller", primary: "#47FF9A", infoColor: "#1FFFF8" },
+  { id: "onboarder", label: "Onboarder", primary: "#1FFFF8", infoColor: "#9A4DFF" },
+  { id: "shortcut", label: "Shortcut", primary: "#9A4DFF", infoColor: "#1FFFF8" },
 ];
 
 const fiweAccents: ReadonlyArray<{ token: string; value: string }> = [
@@ -144,14 +128,14 @@ const neutralScaleDark: ReadonlyArray<ScaleStep> = [
 
 const tableRows: ReadonlyArray<{
   name: string;
-  status: "Aktiv" | "Utkast" | "Pausad" | "Fel";
+  status: "Aktiv" | "Utkast" | "Pausad" | "Fel" | "Info";
   owner: string;
   updated: string;
   isSelected?: boolean;
 }> = [
   { name: "Attributregel / title-sync", status: "Aktiv", owner: "Team A", updated: "2m" },
   { name: "Batch-import / ERP feed", status: "Pausad", owner: "Team B", updated: "8m" },
-  { name: "Prisexport / marketplace", status: "Aktiv", owner: "Team C", updated: "11m" },
+  { name: "Prisexport / marketplace", status: "Info", owner: "Team C", updated: "11m" },
   { name: "Media fallback / CDN", status: "Utkast", owner: "Team A", updated: "22m" },
   { name: "SKU validator / nordics", status: "Fel", owner: "Team D", updated: "30m" },
   {
@@ -232,6 +216,7 @@ function DesignSystemRoute() {
   const statusSuccessSoft = isDarkTheme ? "#163726" : "#DAFFEC";
   const statusWarningSoft = isDarkTheme ? "#3A3715" : "#F8F7C9";
   const statusDangerSoft = isDarkTheme ? "#3A1725" : "#FBD5DF";
+  const statusNeutralSoft = isDarkTheme ? "#2A3343" : "#E2E8F0";
   const textOnAccent = getReadableTextColor(activePrimary);
 
   const skinVariables = {
@@ -256,6 +241,8 @@ function DesignSystemRoute() {
     "--status-danger-soft": statusDangerSoft,
     "--status-info": skin.infoColor,
     "--status-info-soft": statusInfoSoft,
+    "--status-neutral": "#64748B",
+    "--status-neutral-soft": statusNeutralSoft,
     "--text-on-accent": textOnAccent,
   } as CSSProperties;
 
@@ -293,7 +280,7 @@ function DesignSystemRoute() {
           <h2>Kontroller</h2>
           <div className={styles.controlGrid}>
             <article className={styles.controlCard}>
-              <h2>Produktskin</h2>
+              <h3>Produktskin</h3>
               <div className={styles.segmented} role="radiogroup" aria-label="Produkt-skin">
                 {productSkins.map((entry) => (
                   <button
@@ -313,7 +300,7 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.controlCard}>
-              <h2>Canvas-tema</h2>
+              <h3>Canvas-tema</h3>
               <div className={styles.segmented} role="radiogroup" aria-label="Tema">
                 <button
                   type="button"
@@ -341,7 +328,7 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.controlCard}>
-              <h2>Primärfärg</h2>
+              <h3>Primärfärg</h3>
               <div className={styles.segmented} role="radiogroup" aria-label="Primärfärg-läge">
                 <button
                   type="button"
@@ -421,7 +408,7 @@ function DesignSystemRoute() {
                   }
                 }}
               />
-              <span className={styles.skinNote}>Fiwe palette + valfri hex.</span>
+              <span className={styles.ruleLine}>Fiwe palette + valfri hex.</span>
             </div>
           </div>
         </section>
@@ -446,97 +433,122 @@ function DesignSystemRoute() {
               <p className={styles.textSmall}>Small / 15</p>
               <p className={styles.textLabel}>Label / 12</p>
             </div>
-            <p className={styles.caption}>Rethink Sans med tydlig produktkontrast.</p>
+            <p className={styles.ruleLine}>Rethink Sans i produkttempo med tydlig hierarki.</p>
           </div>
         </section>
 
         <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Komponenter</h2>
-          <div className={styles.componentStack}>
+          <h2>Knappar — användning</h2>
+          <div className={styles.usageGrid}>
             <article className={styles.exampleCard}>
-              <h3>Knappar</h3>
-              <div className={styles.buttonRow}>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  <Plus size={18} />
-                  Primär
-                </button>
+              <h3>Toolbar</h3>
+              <div className={styles.toolbarPattern}>
                 <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                  Sekundär
-                </button>
-                <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                  Fara
+                  <ChevronDown size={18} />
+                  Filter
                 </button>
                 <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                  Ghost
+                  Exportera
+                </button>
+                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                  <Plus size={18} />
+                  Ny artikel
                 </button>
                 <button
                   type="button"
                   className={`${styles.button} ${styles.iconButton}`}
-                  aria-label="Spara"
+                  aria-label="Toolbar-inställningar"
                 >
-                  <Save size={18} />
+                  <Settings size={18} />
                 </button>
               </div>
-              <div className={styles.buttonRow}>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonSm}`}
-                >
-                  Sm
+              <p className={styles.ruleLine}>Regel: en primär knapp i varje toolbar-zon.</p>
+            </article>
+
+            <article className={styles.exampleCard}>
+              <h3>Formulärfooter</h3>
+              <div className={styles.formPattern}>
+                <label htmlFor="button-pattern-name" className={styles.inputLabel}>
+                  Artikelnamn
+                </label>
+                <input
+                  id="button-pattern-name"
+                  className={styles.textInput}
+                  placeholder="Skriv artikelnamn..."
+                />
+                <label htmlFor="button-pattern-channel" className={styles.inputLabel}>
+                  Kanal
+                </label>
+                <button id="button-pattern-channel" type="button" className={styles.selectButton}>
+                  Alla kanaler
+                  <ChevronDown size={18} />
                 </button>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  Md
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.buttonPrimary}`}
-                  disabled
-                >
-                  Inaktiv
-                </button>
-              </div>
-              <div className={styles.patternLayouts}>
-                <div className={styles.toolbarPattern}>
-                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                    Filter
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                    <Plus size={18} />
-                    Ny artikel
-                  </button>
-                </div>
-                <div className={styles.formFooter}>
+                <div className={styles.formFooterSplit}>
                   <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
                     Avbryt
                   </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                    Spara ändringar
-                  </button>
+                  <div className={styles.formFooterActions}>
+                    <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                      Spara utkast
+                    </button>
+                    <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                      <Save size={18} />
+                      Publicera
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p className={styles.ruleLine}>Regel: primär åtgärd höger, avbryt separat.</p>
+            </article>
+
+            <article className={styles.exampleCard}>
+              <h3>Destruktivt flöde</h3>
+              <div className={styles.dangerPattern}>
+                <div className={styles.dangerCallout}>
+                  <AlertTriangle size={18} />
+                  Radering påverkar publicerad data.
                 </div>
                 <div className={styles.destructiveRow}>
                   <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                    Ta bort
+                    Ta bort artikel
                   </button>
                   <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                    Bekräfta
+                    Bekräfta manuellt
                   </button>
                 </div>
               </div>
-              <p className={styles.caption}>Storlek, hierarchy och placering i samma rytm.</p>
+              <p className={styles.ruleLine}>
+                Regel: destruktiva actions får aldrig samma tyngd som primär.
+              </p>
             </article>
+          </div>
+        </section>
+
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
+          <h2>Ikoner — användning</h2>
+          <div className={styles.usageGrid}>
             <article className={styles.exampleCard}>
-              <h3>Ikoner</h3>
-              <div className={styles.iconSizeRow}>
-                {[16, 20, 24].map((size) => (
-                  <div key={size} className={styles.iconSizeItem}>
-                    <span className={styles.iconSwatch}>
-                      <Settings size={size} />
-                    </span>
-                    <span>{size}px</span>
-                  </div>
-                ))}
+              <h3>Pakethierarki</h3>
+              <div className={styles.iconPackageRow}>
+                <span className={styles.markBadge}>
+                  <span className={styles.markDiamond} aria-hidden="true" />
+                  Fiwe mark
+                </span>
+                <span className={styles.chip}>Produkt / nav / domän</span>
               </div>
-              <div className={styles.patternStack}>
+              <div className={styles.iconPackageRow}>
+                <span className={styles.chip}>
+                  <Search size={16} />
+                  Lucide
+                </span>
+                <span className={styles.chip}>CRUD / chrome</span>
+              </div>
+              <p className={styles.ruleLine}>Regel: en CRUD-ikonfamilj (lucide-react), inga mixade bibliotek.</p>
+            </article>
+
+            <article className={styles.exampleCard}>
+              <h3>Ikoner i kontext</h3>
+              <div className={styles.iconContextStack}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
                   <Search size={18} />
                   Sök artikel
@@ -545,53 +557,42 @@ function DesignSystemRoute() {
                   <button
                     type="button"
                     className={`${styles.button} ${styles.iconButton}`}
-                    aria-label="Notiser"
+                    aria-label="Öppna notiser"
                   >
-                    <Bell size={18} />
+                    <Bell size={20} />
                   </button>
                   <button
                     type="button"
                     className={`${styles.button} ${styles.iconButton}`}
-                    aria-label="Inställningar"
+                    aria-label="Öppna inställningar"
                   >
-                    <Settings size={18} />
+                    <Settings size={20} />
                   </button>
                 </div>
                 <nav className={styles.inlineNav} aria-label="Navigering med ikon och text">
                   <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-                    <Home size={18} />
+                    <Home size={20} />
                     Översikt
                   </button>
                   <button type="button" className={styles.navItem}>
-                    <ListTodo size={18} />
+                    <ListTodo size={20} />
                     Ärenden
                   </button>
                 </nav>
                 <div className={styles.tableActionRow}>
                   <button type="button" className={styles.rowAction} aria-label="Visa rad">
-                    <Eye size={18} />
+                    <Eye size={16} />
                   </button>
                   <button type="button" className={styles.rowAction} aria-label="Redigera rad">
-                    <Pencil size={18} />
+                    <Pencil size={16} />
                   </button>
                   <button type="button" className={styles.rowAction} aria-label="Fler val">
-                    <MoreHorizontal size={18} />
+                    <MoreHorizontal size={16} />
                   </button>
                 </div>
               </div>
-              <div className={styles.iconPackageRow}>
-                <span className={styles.markBadge}>
-                  <span className={styles.markDiamond} aria-hidden="true" />
-                  Fiwe mark
-                </span>
-                <span className={styles.caption}>Produkt/nav-domän</span>
-                <span className={styles.chip}>
-                  <Plus size={16} />
-                  Lucide: CRUD/chrome
-                </span>
-              </div>
-              <p className={styles.caption}>
-                Lucide + <code>currentColor</code>. En familj för UI-ikoner.
+              <p className={styles.ruleLine}>
+                Regel: 16 tabell actions, 20 nav/chrome, 24 för större highlights.
               </p>
             </article>
           </div>
@@ -601,6 +602,13 @@ function DesignSystemRoute() {
           <h2>Tabeller</h2>
           <div className={styles.componentStack}>
             <article className={styles.exampleCard}>
+              <div className={styles.statusLegend}>
+                <span className={`${styles.badge} ${styles.badgeSuccess}`}>Success</span>
+                <span className={`${styles.badge} ${styles.badgeWarning}`}>Warning</span>
+                <span className={`${styles.badge} ${styles.badgeDanger}`}>Danger</span>
+                <span className={`${styles.badge} ${styles.badgeInfo}`}>Info</span>
+                <span className={`${styles.badge} ${styles.badgeNeutral}`}>Neutral</span>
+              </div>
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
@@ -636,21 +644,21 @@ function DesignSystemRoute() {
                               className={styles.rowAction}
                               aria-label={`Visa ${row.name}`}
                             >
-                              <Eye size={18} />
+                              <Eye size={16} />
                             </button>
                             <button
                               type="button"
                               className={styles.rowAction}
                               aria-label={`Redigera ${row.name}`}
                             >
-                              <Pencil size={18} />
+                              <Pencil size={16} />
                             </button>
                             <button
                               type="button"
                               className={styles.rowAction}
                               aria-label={`Fler val för ${row.name}`}
                             >
-                              <MoreHorizontal size={18} />
+                              <MoreHorizontal size={16} />
                             </button>
                           </div>
                         </td>
@@ -677,147 +685,7 @@ function DesignSystemRoute() {
                   </button>
                 </div>
               </div>
-            </article>
-          </div>
-        </section>
-
-        <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Övriga komponenter</h2>
-          <div className={styles.componentsGrid}>
-            <article className={styles.miniCard}>
-              <h3>Input</h3>
-              <label htmlFor="demo-input" className={styles.inputLabel}>
-                Kundnamn
-              </label>
-              <input id="demo-input" className={styles.textInput} placeholder="Skriv kundnamn..." />
-              <p className={styles.helperText}>Hjälptext under fältet.</p>
-              <p className={styles.errorText}>Fel: minst 3 tecken.</p>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Checkbox + switch</h3>
-              <label className={styles.checkboxRow}>
-                <input type="checkbox" defaultChecked />
-                <span>Visa endast aktiva artiklar</span>
-              </label>
-              <div className={styles.switchRow}>
-                <span>Auto-spara</span>
-                <button type="button" className={styles.switchButton} aria-pressed="true">
-                  <span className={styles.switchThumb} />
-                </button>
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Select</h3>
-              <button type="button" className={styles.selectButton}>
-                Alla kanaler
-                <ChevronDown size={18} />
-              </button>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Tabs</h3>
-              <div className={styles.tabsRow} role="tablist" aria-label="Demo-tabbar">
-                <button
-                  type="button"
-                  className={`${styles.tabItem} ${styles.tabItemActive}`}
-                  role="tab"
-                  aria-selected="true"
-                >
-                  Artiklar
-                </button>
-                <button type="button" className={styles.tabItem} role="tab" aria-selected="false">
-                  Regler
-                </button>
-                <button type="button" className={styles.tabItem} role="tab" aria-selected="false">
-                  Historik
-                </button>
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Banner / toast</h3>
-              <div className={`${styles.banner} ${styles.bannerInfo}`}>
-                <Bell size={18} />
-                Synkning pågår
-              </div>
-              <div className={`${styles.banner} ${styles.bannerSuccess}`}>
-                <Check size={18} />
-                Artikel publicerad
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Badge / chip</h3>
-              <div className={styles.badgeRow}>
-                <span className={`${styles.badge} ${styles.badgeSuccess}`}>Aktiv</span>
-                <span className={`${styles.badge} ${styles.badgeWarning}`}>Utkast</span>
-                <span className={`${styles.badge} ${styles.badgeDanger}`}>Fel</span>
-                <span className={`${styles.badge} ${styles.badgeInfo}`}>Info</span>
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Kort</h3>
-              <div className={styles.contentCard}>
-                <p className={styles.contentCardTitle}>Importstatus</p>
-                <p className={styles.contentCardMeta}>Senast uppdaterad för 2 min sedan</p>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}
-                >
-                  Visa detaljer
-                </button>
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Dialog-shell</h3>
-              <div className={styles.dialogShell}>
-                <div className={styles.dialogHeader}>
-                  <strong>Bekräfta borttagning</strong>
-                  <button type="button" className={styles.rowAction} aria-label="Stäng dialog">
-                    <X size={18} />
-                  </button>
-                </div>
-                <div className={styles.formFooter}>
-                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                    Avbryt
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                    Ta bort
-                  </button>
-                </div>
-              </div>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Sidebar-nav</h3>
-              <nav aria-label="Demo-sidnavigering" className={styles.sidebarNav}>
-                <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-                  <Home size={18} />
-                  Översikt
-                </button>
-                <button type="button" className={styles.navItem}>
-                  <ListTodo size={18} />
-                  Ärenden
-                </button>
-                <button type="button" className={styles.navItem}>
-                  <Settings size={18} />
-                  Inställningar
-                </button>
-              </nav>
-            </article>
-
-            <article className={styles.miniCard}>
-              <h3>Listdensitet</h3>
-              <div className={styles.densityList}>
-                <span>01 · SKU-AX194 · Aktiv</span>
-                <span>02 · SKU-AX195 · Utkast</span>
-                <span>03 · SKU-AX196 · Aktiv</span>
-                <span>04 · SKU-AX197 · Pausad</span>
-              </div>
+              <p className={styles.ruleLine}>Regel: statusfärg betyder semantik, inte dekor.</p>
             </article>
           </div>
         </section>
@@ -935,11 +803,12 @@ function getReadableTextColor(backgroundHex: string): string {
 }
 
 function statusClassForRow(
-  status: "Aktiv" | "Utkast" | "Pausad" | "Fel",
+  status: "Aktiv" | "Utkast" | "Pausad" | "Fel" | "Info",
   css: Record<string, string>,
 ): string {
   if (status === "Aktiv") return css.badgeSuccess;
   if (status === "Utkast") return css.badgeWarning;
   if (status === "Fel") return css.badgeDanger;
-  return css.badgeInfo;
+  if (status === "Info") return css.badgeInfo;
+  return css.badgeNeutral;
 }
