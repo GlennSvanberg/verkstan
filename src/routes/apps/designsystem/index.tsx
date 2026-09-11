@@ -94,11 +94,6 @@ export const fiweSpacingScale: ReadonlyArray<SpacingToken> = [
   { token: "space-12", px: 48, use: "page sections" },
 ];
 
-export const fiweRadiusGuide = {
-  controls: "6–8",
-  cards: "10–12",
-} as const;
-
 const lightThemeTokens: ThemeTokens = {
   bgApp: "#FFFFFF",
   bgSubtle: "#F7F9FC",
@@ -291,11 +286,148 @@ function DesignSystemRoute() {
               Produktläge
             </span>
           </div>
-          <p className={styles.lead}>Ljust workspace. Mörkt i #0B0F1A-familjen.</p>
+          <p className={styles.lead}>
+            Regel: produktytor är ljusa; mörkt läge är slate i #0B0F1A-familjen, inte
+            marketing-midnight.
+          </p>
           <div className={styles.heroMeta}>
             <span>Skin: {skin.label}</span>
             <span>Aktiv primär: {activePrimary}</span>
             <span>Tema: {canvasTheme === "light" ? "Ljust" : "Mörkt"}</span>
+          </div>
+          <div className={styles.heroControlLayout}>
+            <div className={styles.controlGrid}>
+              <article className={styles.controlCard}>
+                <h3>Produktskin</h3>
+                <div className={styles.segmented} role="radiogroup" aria-label="Produkt-skin">
+                  {productSkins.map((entry) => (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={activeSkin === entry.id}
+                      className={`${styles.segmentedItem} ${
+                        activeSkin === entry.id ? styles.segmentedItemActive : ""
+                      }`}
+                      onClick={() => setActiveSkin(entry.id)}
+                    >
+                      {entry.label}
+                    </button>
+                  ))}
+                </div>
+              </article>
+
+              <article className={styles.controlCard}>
+                <h3>Canvas-tema</h3>
+                <div className={styles.segmented} role="radiogroup" aria-label="Tema">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={canvasTheme === "light"}
+                    className={`${styles.segmentedItem} ${
+                      canvasTheme === "light" ? styles.segmentedItemActive : ""
+                    }`}
+                    onClick={() => setCanvasTheme("light")}
+                  >
+                    Ljust
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={canvasTheme === "dark"}
+                    className={`${styles.segmentedItem} ${
+                      canvasTheme === "dark" ? styles.segmentedItemActive : ""
+                    }`}
+                    onClick={() => setCanvasTheme("dark")}
+                  >
+                    Mörkt
+                  </button>
+                </div>
+              </article>
+
+              <article className={styles.controlCard}>
+                <h3>Primärfärg</h3>
+                <div className={styles.segmented} role="radiogroup" aria-label="Primärfärg-läge">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={primaryMode === "preset"}
+                    className={`${styles.segmentedItem} ${
+                      primaryMode === "preset" ? styles.segmentedItemActive : ""
+                    }`}
+                    onClick={() => setPrimaryMode("preset")}
+                  >
+                    Produktskin
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={primaryMode === "custom"}
+                    className={`${styles.segmentedItem} ${
+                      primaryMode === "custom" ? styles.segmentedItemActive : ""
+                    }`}
+                    onClick={() => setPrimaryMode("custom")}
+                  >
+                    Egen
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            <div className={styles.customPrimaryPanel}>
+              <div className={styles.customPickerRow}>
+                {fiweAccents.map((entry) => (
+                  <button
+                    key={entry.token}
+                    type="button"
+                    className={`${styles.accentChip} ${
+                      selectedPresetAccent === entry.token ? styles.accentChipActive : ""
+                    }`}
+                    onClick={() => {
+                      setPrimaryMode("custom");
+                      setCustomPrimary(entry.value);
+                      setCustomPrimaryInput(entry.value);
+                    }}
+                  >
+                    <span
+                      className={styles.accentChipSwatch}
+                      style={{ backgroundColor: entry.value }}
+                      aria-hidden="true"
+                    />
+                    {entry.token}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.customColorRow}>
+                <input
+                  type="color"
+                  value={customPrimary}
+                  aria-label="Välj custom primärfärg"
+                  onChange={(event) => {
+                    setPrimaryMode("custom");
+                    setCustomPrimary(event.target.value.toUpperCase());
+                    setCustomPrimaryInput(event.target.value.toUpperCase());
+                  }}
+                />
+                <input
+                  type="text"
+                  value={customPrimaryInput}
+                  aria-label="Skriv custom hex"
+                  className={styles.hexInput}
+                  onChange={(event) => setCustomPrimaryInput(event.target.value)}
+                  onBlur={() => {
+                    const normalized = normalizeHex(customPrimaryInput);
+                    if (normalized) {
+                      setPrimaryMode("custom");
+                      setCustomPrimary(normalized);
+                      setCustomPrimaryInput(normalized);
+                    } else {
+                      setCustomPrimaryInput(customPrimary);
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </header>
 
@@ -316,143 +448,6 @@ function DesignSystemRoute() {
             <span className={styles.calloutChip}>
               Stack: shadcn/ui + Fiwe-tokens, inget eget komponentbibliotek
             </span>
-          </div>
-        </section>
-
-        <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Kontroller</h2>
-          <div className={styles.controlGrid}>
-            <article className={styles.controlCard}>
-              <h3>Produktskin</h3>
-              <div className={styles.segmented} role="radiogroup" aria-label="Produkt-skin">
-                {productSkins.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={activeSkin === entry.id}
-                    className={`${styles.segmentedItem} ${
-                      activeSkin === entry.id ? styles.segmentedItemActive : ""
-                    }`}
-                    onClick={() => setActiveSkin(entry.id)}
-                  >
-                    {entry.label}
-                  </button>
-                ))}
-              </div>
-            </article>
-
-            <article className={styles.controlCard}>
-              <h3>Canvas-tema</h3>
-              <div className={styles.segmented} role="radiogroup" aria-label="Tema">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={canvasTheme === "light"}
-                  className={`${styles.segmentedItem} ${
-                    canvasTheme === "light" ? styles.segmentedItemActive : ""
-                  }`}
-                  onClick={() => setCanvasTheme("light")}
-                >
-                  Ljust
-                </button>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={canvasTheme === "dark"}
-                  className={`${styles.segmentedItem} ${
-                    canvasTheme === "dark" ? styles.segmentedItemActive : ""
-                  }`}
-                  onClick={() => setCanvasTheme("dark")}
-                >
-                  Mörkt
-                </button>
-              </div>
-            </article>
-
-            <article className={styles.controlCard}>
-              <h3>Primärfärg</h3>
-              <div className={styles.segmented} role="radiogroup" aria-label="Primärfärg-läge">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={primaryMode === "preset"}
-                  className={`${styles.segmentedItem} ${
-                    primaryMode === "preset" ? styles.segmentedItemActive : ""
-                  }`}
-                  onClick={() => setPrimaryMode("preset")}
-                >
-                  Produktskin
-                </button>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={primaryMode === "custom"}
-                  className={`${styles.segmentedItem} ${
-                    primaryMode === "custom" ? styles.segmentedItemActive : ""
-                  }`}
-                  onClick={() => setPrimaryMode("custom")}
-                >
-                  Egen
-                </button>
-              </div>
-            </article>
-          </div>
-
-          <div className={styles.customPrimaryPanel}>
-            <div className={styles.customPickerRow}>
-              {fiweAccents.map((entry) => (
-                <button
-                  key={entry.token}
-                  type="button"
-                  className={`${styles.accentChip} ${
-                    selectedPresetAccent === entry.token ? styles.accentChipActive : ""
-                  }`}
-                  onClick={() => {
-                    setPrimaryMode("custom");
-                    setCustomPrimary(entry.value);
-                    setCustomPrimaryInput(entry.value);
-                  }}
-                >
-                  <span
-                    className={styles.accentChipSwatch}
-                    style={{ backgroundColor: entry.value }}
-                    aria-hidden="true"
-                  />
-                  {entry.token}
-                </button>
-              ))}
-            </div>
-            <div className={styles.customColorRow}>
-              <input
-                type="color"
-                value={customPrimary}
-                aria-label="Välj custom primärfärg"
-                onChange={(event) => {
-                  setPrimaryMode("custom");
-                  setCustomPrimary(event.target.value.toUpperCase());
-                  setCustomPrimaryInput(event.target.value.toUpperCase());
-                }}
-              />
-              <input
-                type="text"
-                value={customPrimaryInput}
-                aria-label="Skriv custom hex"
-                className={styles.hexInput}
-                onChange={(event) => setCustomPrimaryInput(event.target.value)}
-                onBlur={() => {
-                  const normalized = normalizeHex(customPrimaryInput);
-                  if (normalized) {
-                    setPrimaryMode("custom");
-                    setCustomPrimary(normalized);
-                    setCustomPrimaryInput(normalized);
-                  } else {
-                    setCustomPrimaryInput(customPrimary);
-                  }
-                }}
-              />
-              <span className={styles.ruleLine}>Fiwe palette + valfri hex.</span>
-            </div>
           </div>
         </section>
 
@@ -483,22 +478,6 @@ function DesignSystemRoute() {
                 ))}
               </div>
             </article>
-            <article className={styles.spacingCard}>
-              <h3>Radius</h3>
-              <div className={styles.radiusGrid}>
-                <div className={styles.radiusCard}>
-                  <span className={styles.radiusLabel}>Controls</span>
-                  <span className={styles.radiusValue}>{fiweRadiusGuide.controls}</span>
-                  <div className={styles.radiusSurfaceControl} aria-hidden="true" />
-                </div>
-                <div className={styles.radiusCard}>
-                  <span className={styles.radiusLabel}>Cards</span>
-                  <span className={styles.radiusValue}>{fiweRadiusGuide.cards}</span>
-                  <div className={styles.radiusSurfaceCard} aria-hidden="true" />
-                </div>
-              </div>
-              <p className={styles.ruleLine}>Regel: håll konsekvent radie mellan controls och paneler.</p>
-            </article>
           </div>
         </section>
 
@@ -522,7 +501,6 @@ function DesignSystemRoute() {
               <p className={styles.textSmall}>Small / 15</p>
               <p className={styles.textLabel}>Label / 12</p>
             </div>
-            <p className={styles.ruleLine}>Rethink Sans i produkttempo med tydlig hierarki.</p>
           </div>
         </section>
 
@@ -551,7 +529,7 @@ function DesignSystemRoute() {
                   <Settings size={18} />
                 </button>
               </div>
-              <p className={styles.ruleLine}>Regel: en primär knapp i varje toolbar-zon.</p>
+              <p className={styles.ruleLine}>Regel: en primär CTA per toolbar-zon.</p>
             </article>
 
             <article className={styles.exampleCard}>
@@ -587,7 +565,7 @@ function DesignSystemRoute() {
                   </div>
                 </div>
               </div>
-              <p className={styles.ruleLine}>Regel: primär åtgärd höger, avbryt separat.</p>
+              <p className={styles.ruleLine}>Regel: formulärfooter har primär CTA till höger, avbryt separat.</p>
             </article>
 
             <article className={styles.exampleCard}>
@@ -607,7 +585,7 @@ function DesignSystemRoute() {
                 </div>
               </div>
               <p className={styles.ruleLine}>
-                Regel: destruktiva actions får aldrig samma tyngd som primär.
+                Regel: danger är aldrig produktens primära action.
               </p>
             </article>
           </div>
@@ -632,7 +610,9 @@ function DesignSystemRoute() {
                 </span>
                 <span className={styles.chip}>CRUD / chrome</span>
               </div>
-              <p className={styles.ruleLine}>Regel: en CRUD-ikonfamilj (lucide-react), inga mixade bibliotek.</p>
+              <p className={styles.ruleLine}>
+                Regel: Fiwe mark för produkt/domän, Lucide för CRUD/chrome.
+              </p>
             </article>
 
             <article className={styles.exampleCard}>
@@ -680,9 +660,6 @@ function DesignSystemRoute() {
                   </button>
                 </div>
               </div>
-              <p className={styles.ruleLine}>
-                Regel: 16 tabell actions, 20 nav/chrome, 24 för större highlights.
-              </p>
             </article>
           </div>
         </section>
