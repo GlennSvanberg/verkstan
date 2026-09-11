@@ -167,6 +167,17 @@
   align-items: center;
 }
 
+.heroControlLayout {
+  margin-top: 1.1rem;
+  border-top: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
+  padding-top: 1rem;
+}
+
+.heroControlLayout .controlGrid,
+.heroControlLayout .customPrimaryPanel {
+  margin-top: 0;
+}
+
 .markBadge {
   display: inline-flex;
   align-items: center;
@@ -248,7 +259,7 @@
 .spacingLayout {
   margin-top: 1.2rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 1rem;
 }
 
