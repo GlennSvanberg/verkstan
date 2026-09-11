@@ -14,7 +14,6 @@ import {
   Save,
   Search,
   Settings,
-  Trash2,
   X,
 } from "lucide-react";
 import styles from "./index.module.css";
@@ -32,7 +31,6 @@ type ProductSkin = {
   label: string;
   primary: string;
   infoColor: string;
-  note: string;
 };
 
 type ThemeTokens = {
@@ -70,21 +68,18 @@ const productSkins: ReadonlyArray<ProductSkin> = [
     label: "Inteller",
     primary: "#47FF9A",
     infoColor: "#1FFFF8",
-    note: "Mint primär. Orange mark används som domänmarkör.",
   },
   {
     id: "onboarder",
     label: "Onboarder",
     primary: "#1FFFF8",
     infoColor: "#9A4DFF",
-    note: "Teal primär. Info får lila för tydlig semantik.",
   },
   {
     id: "shortcut",
     label: "Shortcut",
     primary: "#9A4DFF",
     infoColor: "#1FFFF8",
-    note: "Lila primär och fallback för nya appar.",
   },
 ];
 
@@ -159,7 +154,13 @@ const tableRows: ReadonlyArray<{
   { name: "Prisexport / marketplace", status: "Aktiv", owner: "Team C", updated: "11m" },
   { name: "Media fallback / CDN", status: "Utkast", owner: "Team A", updated: "22m" },
   { name: "SKU validator / nordics", status: "Fel", owner: "Team D", updated: "30m" },
-  { name: "Kanalmapping / B2B", status: "Aktiv", owner: "Team B", updated: "37m", isSelected: true },
+  {
+    name: "Kanalmapping / B2B",
+    status: "Aktiv",
+    owner: "Team B",
+    updated: "37m",
+    isSelected: true,
+  },
   { name: "Diff-rapport / nightly", status: "Utkast", owner: "Team C", updated: "45m" },
   { name: "Tagg-normalisering", status: "Aktiv", owner: "Team A", updated: "1h" },
 ];
@@ -271,7 +272,7 @@ function DesignSystemRoute() {
   return (
     <section className={styles.workspaceRoot} data-theme={canvasTheme} style={skinVariables}>
       <div className={styles.workspaceInner}>
-        <header className={styles.panel}>
+        <header className={`${styles.panel} ${styles.heroPanel}`}>
           <p className={styles.kicker}>Fiwe Product Design System</p>
           <div className={styles.headerTitleRow}>
             <h1>Designsystem</h1>
@@ -280,12 +281,16 @@ function DesignSystemRoute() {
               Produktläge
             </span>
           </div>
-          <p className={styles.lead}>
-            Ljust läge: workspace-first canvas. Mörkt läge: #0B0F1A-familjen.
-          </p>
+          <p className={styles.lead}>Ljust workspace. Mörkt i #0B0F1A-familjen.</p>
+          <div className={styles.heroMeta}>
+            <span>Skin: {skin.label}</span>
+            <span>Aktiv primär: {activePrimary}</span>
+            <span>Tema: {canvasTheme === "light" ? "Ljust" : "Mörkt"}</span>
+          </div>
         </header>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
+          <h2>Kontroller</h2>
           <div className={styles.controlGrid}>
             <article className={styles.controlCard}>
               <h2>Produktskin</h2>
@@ -305,7 +310,6 @@ function DesignSystemRoute() {
                   </button>
                 ))}
               </div>
-              <p className={styles.skinNote}>{skin.note}</p>
             </article>
 
             <article className={styles.controlCard}>
@@ -362,90 +366,98 @@ function DesignSystemRoute() {
                   Egen
                 </button>
               </div>
-              <div className={styles.customPickerRow}>
-                {fiweAccents.map((entry) => (
-                  <button
-                    key={entry.token}
-                    type="button"
-                    className={`${styles.accentChip} ${
-                      selectedPresetAccent === entry.token ? styles.accentChipActive : ""
-                    }`}
-                    onClick={() => {
-                      setPrimaryMode("custom");
-                      setCustomPrimary(entry.value);
-                      setCustomPrimaryInput(entry.value);
-                    }}
-                  >
-                    <span
-                      className={styles.accentChipSwatch}
-                      style={{ backgroundColor: entry.value }}
-                      aria-hidden="true"
-                    />
-                    {entry.token}
-                  </button>
-                ))}
-              </div>
-              <div className={styles.customColorRow}>
-                <input
-                  type="color"
-                  value={customPrimary}
-                  aria-label="Välj custom primärfärg"
-                  onChange={(event) => {
-                    setPrimaryMode("custom");
-                    setCustomPrimary(event.target.value.toUpperCase());
-                    setCustomPrimaryInput(event.target.value.toUpperCase());
-                  }}
-                />
-                <input
-                  type="text"
-                  value={customPrimaryInput}
-                  aria-label="Skriv custom hex"
-                  className={styles.hexInput}
-                  onChange={(event) => setCustomPrimaryInput(event.target.value)}
-                  onBlur={() => {
-                    const normalized = normalizeHex(customPrimaryInput);
-                    if (normalized) {
-                      setPrimaryMode("custom");
-                      setCustomPrimary(normalized);
-                      setCustomPrimaryInput(normalized);
-                    } else {
-                      setCustomPrimaryInput(customPrimary);
-                    }
-                  }}
-                />
-              </div>
             </article>
+          </div>
+
+          <div className={styles.customPrimaryPanel}>
+            <div className={styles.customPickerRow}>
+              {fiweAccents.map((entry) => (
+                <button
+                  key={entry.token}
+                  type="button"
+                  className={`${styles.accentChip} ${
+                    selectedPresetAccent === entry.token ? styles.accentChipActive : ""
+                  }`}
+                  onClick={() => {
+                    setPrimaryMode("custom");
+                    setCustomPrimary(entry.value);
+                    setCustomPrimaryInput(entry.value);
+                  }}
+                >
+                  <span
+                    className={styles.accentChipSwatch}
+                    style={{ backgroundColor: entry.value }}
+                    aria-hidden="true"
+                  />
+                  {entry.token}
+                </button>
+              ))}
+            </div>
+            <div className={styles.customColorRow}>
+              <input
+                type="color"
+                value={customPrimary}
+                aria-label="Välj custom primärfärg"
+                onChange={(event) => {
+                  setPrimaryMode("custom");
+                  setCustomPrimary(event.target.value.toUpperCase());
+                  setCustomPrimaryInput(event.target.value.toUpperCase());
+                }}
+              />
+              <input
+                type="text"
+                value={customPrimaryInput}
+                aria-label="Skriv custom hex"
+                className={styles.hexInput}
+                onChange={(event) => setCustomPrimaryInput(event.target.value)}
+                onBlur={() => {
+                  const normalized = normalizeHex(customPrimaryInput);
+                  if (normalized) {
+                    setPrimaryMode("custom");
+                    setCustomPrimary(normalized);
+                    setCustomPrimaryInput(normalized);
+                  } else {
+                    setCustomPrimaryInput(customPrimary);
+                  }
+                }}
+              />
+              <span className={styles.skinNote}>Fiwe palette + valfri hex.</span>
+            </div>
           </div>
         </section>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
           <h2>Färgskalor</h2>
-          <div className={styles.scaleGrid}>
+          <div className={styles.scaleStack}>
             <ScaleStrip title={`Primär ${activePrimary}`} scale={primaryScale} />
-            <ScaleStrip title="Neutrals (aktivt tema)" scale={neutralScale} />
+            <ScaleStrip title="Neutrals" scale={neutralScale} />
             <ScaleStrip title="Status" scale={statusScale} />
           </div>
         </section>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
           <h2>Typografi</h2>
-          <div className={styles.typographyStack}>
-            <p className={styles.textDisplay}>Display / 36</p>
-            <p className={styles.textTitle}>Title / 28</p>
-            <p className={styles.textHeading}>Heading / 22</p>
-            <p className={styles.textBody}>Body / 16</p>
-            <p className={styles.textSmall}>Small / 14</p>
-            <p className={styles.textLabel}>Label / 12</p>
+          <div className={styles.typographyCard}>
+            <div className={styles.typographyStack}>
+              <p className={styles.textDisplay}>Display / 48</p>
+              <p className={styles.textTitle}>Title / 34</p>
+              <p className={styles.textHeading}>Heading / 26</p>
+              <p className={styles.textBody}>Body / 17</p>
+              <p className={styles.textSmall}>Small / 15</p>
+              <p className={styles.textLabel}>Label / 12</p>
+            </div>
+            <p className={styles.caption}>Rethink Sans med tydlig produktkontrast.</p>
           </div>
         </section>
 
-        <section className={styles.panel}>
-          <h2>Knappar</h2>
-          <div className={styles.exampleGrid}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
+          <h2>Komponenter</h2>
+          <div className={styles.componentStack}>
             <article className={styles.exampleCard}>
+              <h3>Knappar</h3>
               <div className={styles.buttonRow}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  <Plus size={16} />
+                  <Plus size={18} />
                   Primär
                 </button>
                 <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -457,48 +469,63 @@ function DesignSystemRoute() {
                 <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
                   Ghost
                 </button>
-                <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Spara">
-                  <Save size={16} />
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.iconButton}`}
+                  aria-label="Spara"
+                >
+                  <Save size={18} />
                 </button>
               </div>
               <div className={styles.buttonRow}>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonSm}`}>
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonSm}`}
+                >
                   Sm
                 </button>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
                   Md
                 </button>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`} disabled>
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonPrimary}`}
+                  disabled
+                >
                   Inaktiv
                 </button>
               </div>
-              <p className={styles.caption}>
-                Toolbar: sekundär + primär. Formfooter: högerjusterad CTA. Destruktiv handling hålls separat.
-              </p>
-              <div className={styles.formFooter}>
-                <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                  Avbryt
-                </button>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  Spara ändringar
-                </button>
+              <div className={styles.patternLayouts}>
+                <div className={styles.toolbarPattern}>
+                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                    Filter
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                    <Plus size={18} />
+                    Ny artikel
+                  </button>
+                </div>
+                <div className={styles.formFooter}>
+                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
+                    Avbryt
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                    Spara ändringar
+                  </button>
+                </div>
+                <div className={styles.destructiveRow}>
+                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
+                    Ta bort
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                    Bekräfta
+                  </button>
+                </div>
               </div>
-              <div className={styles.destructiveRow}>
-                <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                  Ta bort
-                </button>
-                <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                  Bekräfta
-                </button>
-              </div>
+              <p className={styles.caption}>Storlek, hierarchy och placering i samma rytm.</p>
             </article>
-          </div>
-        </section>
-
-        <section className={styles.panel}>
-          <h2>Ikoner</h2>
-          <div className={styles.exampleGrid}>
             <article className={styles.exampleCard}>
+              <h3>Ikoner</h3>
               <div className={styles.iconSizeRow}>
                 {[16, 20, 24].map((size) => (
                   <div key={size} className={styles.iconSizeItem}>
@@ -511,75 +538,68 @@ function DesignSystemRoute() {
               </div>
               <div className={styles.patternStack}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  <Search size={16} />
+                  <Search size={18} />
                   Sök artikel
                 </button>
                 <div className={styles.iconOnlyRow}>
-                  <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Notiser">
-                    <Bell size={16} />
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.iconButton}`}
+                    aria-label="Notiser"
+                  >
+                    <Bell size={18} />
                   </button>
-                  <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Inställningar">
-                    <Settings size={16} />
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.iconButton}`}
+                    aria-label="Inställningar"
+                  >
+                    <Settings size={18} />
                   </button>
                 </div>
                 <nav className={styles.inlineNav} aria-label="Navigering med ikon och text">
                   <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-                    <Home size={16} />
+                    <Home size={18} />
                     Översikt
                   </button>
                   <button type="button" className={styles.navItem}>
-                    <ListTodo size={16} />
+                    <ListTodo size={18} />
                     Ärenden
                   </button>
                 </nav>
                 <div className={styles.tableActionRow}>
                   <button type="button" className={styles.rowAction} aria-label="Visa rad">
-                    <Eye size={16} />
+                    <Eye size={18} />
                   </button>
                   <button type="button" className={styles.rowAction} aria-label="Redigera rad">
-                    <Pencil size={16} />
+                    <Pencil size={18} />
                   </button>
                   <button type="button" className={styles.rowAction} aria-label="Fler val">
-                    <MoreHorizontal size={16} />
+                    <MoreHorizontal size={18} />
                   </button>
                 </div>
               </div>
-              <p className={styles.caption}>
-                Lucide för CRUD/chrome. Färg styrs via <code>currentColor</code>.
-              </p>
-            </article>
-
-            <article className={styles.exampleCard}>
-              <h3>Ikonpaket</h3>
-              <div className={styles.brandMarkRow}>
+              <div className={styles.iconPackageRow}>
                 <span className={styles.markBadge}>
                   <span className={styles.markDiamond} aria-hidden="true" />
                   Fiwe mark
                 </span>
-                <span className={styles.caption}>Produkt/nav/domän: Fiwe SVG-set</span>
-              </div>
-              <div className={styles.buttonRow}>
+                <span className={styles.caption}>Produkt/nav-domän</span>
                 <span className={styles.chip}>
                   <Plus size={16} />
-                  Lägg till
-                </span>
-                <span className={styles.chip}>
-                  <Pencil size={16} />
-                  Redigera
-                </span>
-                <span className={styles.chip}>
-                  <Trash2 size={16} />
-                  Ta bort
+                  Lucide: CRUD/chrome
                 </span>
               </div>
-              <p className={styles.caption}>CRUD/chrome: lucide-react.</p>
+              <p className={styles.caption}>
+                Lucide + <code>currentColor</code>. En familj för UI-ikoner.
+              </p>
             </article>
           </div>
         </section>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
           <h2>Tabeller</h2>
-          <div className={styles.exampleGrid}>
+          <div className={styles.componentStack}>
             <article className={styles.exampleCard}>
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
@@ -597,20 +617,13 @@ function DesignSystemRoute() {
                   </thead>
                   <tbody>
                     {tableRows.map((row) => (
-                      <tr key={row.name} className={row.isSelected ? styles.tableRowSelected : undefined}>
+                      <tr
+                        key={row.name}
+                        className={row.isSelected ? styles.tableRowSelected : undefined}
+                      >
                         <td>{row.name}</td>
                         <td>
-                          <span
-                            className={`${styles.badge} ${
-                              row.status === "Aktiv"
-                                ? styles.badgeSuccess
-                                : row.status === "Utkast"
-                                  ? styles.badgeWarning
-                                  : row.status === "Fel"
-                                    ? styles.badgeDanger
-                                    : styles.badgeInfo
-                            }`}
-                          >
+                          <span className={`${styles.badge} ${statusClassForRow(row.status, styles)}`}>
                             {row.status}
                           </span>
                         </td>
@@ -618,14 +631,26 @@ function DesignSystemRoute() {
                         <td>{row.updated}</td>
                         <td>
                           <div className={styles.tableActionRow}>
-                            <button type="button" className={styles.rowAction} aria-label={`Visa ${row.name}`}>
-                              <Eye size={16} />
+                            <button
+                              type="button"
+                              className={styles.rowAction}
+                              aria-label={`Visa ${row.name}`}
+                            >
+                              <Eye size={18} />
                             </button>
-                            <button type="button" className={styles.rowAction} aria-label={`Redigera ${row.name}`}>
-                              <Pencil size={16} />
+                            <button
+                              type="button"
+                              className={styles.rowAction}
+                              aria-label={`Redigera ${row.name}`}
+                            >
+                              <Pencil size={18} />
                             </button>
-                            <button type="button" className={styles.rowAction} aria-label={`Fler val för ${row.name}`}>
-                              <MoreHorizontal size={16} />
+                            <button
+                              type="button"
+                              className={styles.rowAction}
+                              aria-label={`Fler val för ${row.name}`}
+                            >
+                              <MoreHorizontal size={18} />
                             </button>
                           </div>
                         </td>
@@ -637,11 +662,17 @@ function DesignSystemRoute() {
               <div className={styles.tableFooter}>
                 <span>Tomt läge: visa filterorsak + CTA “Skapa ny”.</span>
                 <div className={styles.paginationRow}>
-                  <button type="button" className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}
+                  >
                     Föregående
                   </button>
                   <span>Sida 2 / 8</span>
-                  <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}
+                  >
                     Nästa
                   </button>
                 </div>
@@ -650,9 +681,9 @@ function DesignSystemRoute() {
           </div>
         </section>
 
-        <section className={styles.panel}>
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
           <h2>Övriga komponenter</h2>
-          <div className={styles.componentsMosaic}>
+          <div className={styles.componentsGrid}>
             <article className={styles.miniCard}>
               <h3>Input</h3>
               <label htmlFor="demo-input" className={styles.inputLabel}>
@@ -681,7 +712,7 @@ function DesignSystemRoute() {
               <h3>Select</h3>
               <button type="button" className={styles.selectButton}>
                 Alla kanaler
-                <ChevronDown size={16} />
+                <ChevronDown size={18} />
               </button>
             </article>
 
@@ -708,11 +739,11 @@ function DesignSystemRoute() {
             <article className={styles.miniCard}>
               <h3>Banner / toast</h3>
               <div className={`${styles.banner} ${styles.bannerInfo}`}>
-                <Bell size={16} />
+                <Bell size={18} />
                 Synkning pågår
               </div>
               <div className={`${styles.banner} ${styles.bannerSuccess}`}>
-                <Check size={16} />
+                <Check size={18} />
                 Artikel publicerad
               </div>
             </article>
@@ -747,7 +778,7 @@ function DesignSystemRoute() {
                 <div className={styles.dialogHeader}>
                   <strong>Bekräfta borttagning</strong>
                   <button type="button" className={styles.rowAction} aria-label="Stäng dialog">
-                    <X size={16} />
+                    <X size={18} />
                   </button>
                 </div>
                 <div className={styles.formFooter}>
@@ -765,15 +796,15 @@ function DesignSystemRoute() {
               <h3>Sidebar-nav</h3>
               <nav aria-label="Demo-sidnavigering" className={styles.sidebarNav}>
                 <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-                  <Home size={16} />
+                  <Home size={18} />
                   Översikt
                 </button>
                 <button type="button" className={styles.navItem}>
-                  <ListTodo size={16} />
+                  <ListTodo size={18} />
                   Ärenden
                 </button>
                 <button type="button" className={styles.navItem}>
-                  <Settings size={16} />
+                  <Settings size={18} />
                   Inställningar
                 </button>
               </nav>
@@ -901,4 +932,14 @@ function getReadableTextColor(backgroundHex: string): string {
   return contrastRatio(backgroundHex, darkText) >= contrastRatio(backgroundHex, lightText)
     ? darkText
     : lightText;
+}
+
+function statusClassForRow(
+  status: "Aktiv" | "Utkast" | "Pausad" | "Fel",
+  css: Record<string, string>,
+): string {
+  if (status === "Aktiv") return css.badgeSuccess;
+  if (status === "Utkast") return css.badgeWarning;
+  if (status === "Fel") return css.badgeDanger;
+  return css.badgeInfo;
 }
