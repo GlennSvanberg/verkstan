@@ -5,10 +5,8 @@ import {
   Bell,
   Check,
   ChevronDown,
-  ChevronRight,
   Eye,
   Home,
-  Info,
   ListTodo,
   MoreHorizontal,
   Pencil,
@@ -27,17 +25,13 @@ export const Route = createFileRoute("/apps/designsystem/")({
 
 type ProductSkinId = "inteller" | "onboarder" | "shortcut";
 type CanvasTheme = "light" | "dark";
+type PrimaryMode = "preset" | "custom";
 
 type ProductSkin = {
   id: ProductSkinId;
   label: string;
   primary: string;
-  primarySoftLight: string;
-  primarySoftDark: string;
-  primaryStrong: string;
   infoColor: string;
-  infoSoftLight: string;
-  infoSoftDark: string;
   note: string;
 };
 
@@ -52,52 +46,49 @@ type ThemeTokens = {
   textOnInverse: string;
   borderDefault: string;
   borderStrong: string;
-  textOnAccent: string;
+};
+
+type ScaleStep = {
+  step: string;
+  value: string;
+};
+
+type RgbColor = {
+  r: number;
+  g: number;
+  b: number;
 };
 
 const skinStorageKey = "verkstan.designsystem.skin";
 const themeStorageKey = "verkstan.designsystem.theme";
+const primaryModeStorageKey = "verkstan.designsystem.primarymode";
+const customPrimaryStorageKey = "verkstan.designsystem.customprimary";
 
 const productSkins: ReadonlyArray<ProductSkin> = [
   {
     id: "inteller",
     label: "Inteller",
     primary: "#47FF9A",
-    primarySoftLight: "#DAFFEC",
-    primarySoftDark: "#133726",
-    primaryStrong: "#27CC73",
     infoColor: "#1FFFF8",
-    infoSoftLight: "#CBFFFD",
-    infoSoftDark: "#163640",
-    note: "Mint är primär. Orange diamant (#F36F16) är mark, inte CTA.",
+    note: "Mint primär. Orange mark används som domänmarkör.",
   },
   {
     id: "onboarder",
     label: "Onboarder",
     primary: "#1FFFF8",
-    primarySoftLight: "#D3FFFD",
-    primarySoftDark: "#153742",
-    primaryStrong: "#12CCC6",
     infoColor: "#9A4DFF",
-    infoSoftLight: "#E9DBFF",
-    infoSoftDark: "#2E214A",
-    note: "Teal är primär. Info byter till lila för tydlig status-separation.",
+    note: "Teal primär. Info får lila för tydlig semantik.",
   },
   {
     id: "shortcut",
     label: "Shortcut",
     primary: "#9A4DFF",
-    primarySoftLight: "#ECDFFF",
-    primarySoftDark: "#2B2144",
-    primaryStrong: "#7D2EE8",
     infoColor: "#1FFFF8",
-    infoSoftLight: "#CBFFFD",
-    infoSoftDark: "#163640",
-    note: "Lila är primär för Shortcut och fallback för nya appar.",
+    note: "Lila primär och fallback för nya appar.",
   },
 ];
 
-const accentTokens: ReadonlyArray<{ token: string; value: string }> = [
+const fiweAccents: ReadonlyArray<{ token: string; value: string }> = [
   { token: "purple", value: "#9A4DFF" },
   { token: "teal", value: "#1FFFF8" },
   { token: "mint", value: "#47FF9A" },
@@ -117,7 +108,6 @@ const lightThemeTokens: ThemeTokens = {
   textOnInverse: "#F8FAFC",
   borderDefault: "#DCE2EC",
   borderStrong: "#C2CDD9",
-  textOnAccent: "#0B0F1A",
 };
 
 const darkThemeTokens: ThemeTokens = {
@@ -131,12 +121,55 @@ const darkThemeTokens: ThemeTokens = {
   textOnInverse: "#0B0F1A",
   borderDefault: "#273449",
   borderStrong: "#334155",
-  textOnAccent: "#0B0F1A",
 };
+
+const neutralScaleLight: ReadonlyArray<ScaleStep> = [
+  { step: "0", value: "#FFFFFF" },
+  { step: "50", value: "#F8FAFC" },
+  { step: "100", value: "#F1F5F9" },
+  { step: "200", value: "#E2E8F0" },
+  { step: "300", value: "#CBD5E1" },
+  { step: "400", value: "#94A3B8" },
+  { step: "500", value: "#64748B" },
+  { step: "700", value: "#334155" },
+  { step: "900", value: "#0B0F1A" },
+];
+
+const neutralScaleDark: ReadonlyArray<ScaleStep> = [
+  { step: "50", value: "#ECF0F8" },
+  { step: "100", value: "#CBD5E1" },
+  { step: "200", value: "#94A3B8" },
+  { step: "300", value: "#64748B" },
+  { step: "400", value: "#334155" },
+  { step: "500", value: "#273449" },
+  { step: "600", value: "#1F2937" },
+  { step: "700", value: "#111827" },
+  { step: "900", value: "#0B0F1A" },
+];
+
+const tableRows: ReadonlyArray<{
+  name: string;
+  status: "Aktiv" | "Utkast" | "Pausad" | "Fel";
+  owner: string;
+  updated: string;
+  isSelected?: boolean;
+}> = [
+  { name: "Attributregel / title-sync", status: "Aktiv", owner: "Team A", updated: "2m" },
+  { name: "Batch-import / ERP feed", status: "Pausad", owner: "Team B", updated: "8m" },
+  { name: "Prisexport / marketplace", status: "Aktiv", owner: "Team C", updated: "11m" },
+  { name: "Media fallback / CDN", status: "Utkast", owner: "Team A", updated: "22m" },
+  { name: "SKU validator / nordics", status: "Fel", owner: "Team D", updated: "30m" },
+  { name: "Kanalmapping / B2B", status: "Aktiv", owner: "Team B", updated: "37m", isSelected: true },
+  { name: "Diff-rapport / nightly", status: "Utkast", owner: "Team C", updated: "45m" },
+  { name: "Tagg-normalisering", status: "Aktiv", owner: "Team A", updated: "1h" },
+];
 
 function DesignSystemRoute() {
   const [activeSkin, setActiveSkin] = useState<ProductSkinId>("shortcut");
   const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("light");
+  const [primaryMode, setPrimaryMode] = useState<PrimaryMode>("preset");
+  const [customPrimary, setCustomPrimary] = useState<string>("#F36F16");
+  const [customPrimaryInput, setCustomPrimaryInput] = useState<string>("#F36F16");
 
   useEffect(() => {
     const savedSkin = window.localStorage.getItem(skinStorageKey);
@@ -148,6 +181,18 @@ function DesignSystemRoute() {
     if (savedTheme === "light" || savedTheme === "dark") {
       setCanvasTheme(savedTheme);
     }
+
+    const savedPrimaryMode = window.localStorage.getItem(primaryModeStorageKey);
+    if (savedPrimaryMode === "preset" || savedPrimaryMode === "custom") {
+      setPrimaryMode(savedPrimaryMode);
+    }
+
+    const savedCustomPrimary = window.localStorage.getItem(customPrimaryStorageKey);
+    const normalizedSavedCustom = normalizeHex(savedCustomPrimary);
+    if (normalizedSavedCustom) {
+      setCustomPrimary(normalizedSavedCustom);
+      setCustomPrimaryInput(normalizedSavedCustom);
+    }
   }, []);
 
   useEffect(() => {
@@ -158,21 +203,35 @@ function DesignSystemRoute() {
     window.localStorage.setItem(themeStorageKey, canvasTheme);
   }, [canvasTheme]);
 
+  useEffect(() => {
+    window.localStorage.setItem(primaryModeStorageKey, primaryMode);
+  }, [primaryMode]);
+
+  useEffect(() => {
+    window.localStorage.setItem(customPrimaryStorageKey, customPrimary);
+  }, [customPrimary]);
+
   const skin = useMemo(
     () => productSkins.find((entry) => entry.id === activeSkin) ?? productSkins[2],
     [activeSkin],
   );
 
-  const infoStatusToken =
-    skin.id === "onboarder" ? "status.info blir lila i Onboarder" : "status.info är teal";
-
+  const activePrimary = primaryMode === "custom" ? customPrimary : skin.primary;
+  const primaryScale = useMemo(() => buildPrimaryScale(activePrimary), [activePrimary]);
+  const productPrimarySoftLight = getScaleValue(primaryScale, "100", activePrimary);
+  const productPrimaryStrong = getScaleValue(primaryScale, "700", activePrimary);
   const themeTokens = canvasTheme === "dark" ? darkThemeTokens : lightThemeTokens;
   const isDarkTheme = canvasTheme === "dark";
-  const productPrimarySoft = isDarkTheme ? skin.primarySoftDark : skin.primarySoftLight;
-  const statusInfoSoft = isDarkTheme ? skin.infoSoftDark : skin.infoSoftLight;
+  const productPrimarySoft = isDarkTheme
+    ? mixHex("#0B0F1A", activePrimary, 0.24)
+    : productPrimarySoftLight;
+  const statusInfoSoft = isDarkTheme
+    ? mixHex("#0B0F1A", skin.infoColor, 0.22)
+    : mixHex("#FFFFFF", skin.infoColor, 0.22);
   const statusSuccessSoft = isDarkTheme ? "#163726" : "#DAFFEC";
   const statusWarningSoft = isDarkTheme ? "#3A3715" : "#F8F7C9";
   const statusDangerSoft = isDarkTheme ? "#3A1725" : "#FBD5DF";
+  const textOnAccent = getReadableTextColor(activePrimary);
 
   const skinVariables = {
     "--bg-app": themeTokens.bgApp,
@@ -185,9 +244,9 @@ function DesignSystemRoute() {
     "--text-on-inverse": themeTokens.textOnInverse,
     "--border-default": themeTokens.borderDefault,
     "--border-strong": themeTokens.borderStrong,
-    "--product-primary": skin.primary,
+    "--product-primary": activePrimary,
     "--product-primary-soft": productPrimarySoft,
-    "--product-primary-strong": skin.primaryStrong,
+    "--product-primary-strong": productPrimaryStrong,
     "--status-success": "#47FF9A",
     "--status-success-soft": statusSuccessSoft,
     "--status-warning": "#F3F316",
@@ -196,34 +255,18 @@ function DesignSystemRoute() {
     "--status-danger-soft": statusDangerSoft,
     "--status-info": skin.infoColor,
     "--status-info-soft": statusInfoSoft,
-    "--text-on-accent": themeTokens.textOnAccent,
+    "--text-on-accent": textOnAccent,
   } as CSSProperties;
 
-  const neutralTokens: ReadonlyArray<{ token: string; value: string }> = [
-    { token: "bg.app", value: themeTokens.bgApp },
-    { token: "bg.subtle", value: themeTokens.bgSubtle },
-    { token: "bg.muted", value: themeTokens.bgMuted },
-    { token: "bg.inverse", value: themeTokens.bgInverse },
-    { token: "text.primary", value: themeTokens.textPrimary },
-    { token: "text.secondary", value: themeTokens.textSecondary },
-    { token: "text.muted", value: themeTokens.textMuted },
-    { token: "text.on-inverse", value: themeTokens.textOnInverse },
-    { token: "border.default", value: themeTokens.borderDefault },
-    { token: "border.strong", value: themeTokens.borderStrong },
+  const neutralScale = isDarkTheme ? neutralScaleDark : neutralScaleLight;
+  const statusScale: ReadonlyArray<ScaleStep> = [
+    { step: "success", value: "#47FF9A" },
+    { step: "warning", value: "#F3F316" },
+    { step: "danger", value: "#E11D48" },
+    { step: "info", value: skin.infoColor },
   ];
 
-  const primaryScaleTokens: ReadonlyArray<{ token: string; value: string }> = [
-    { token: "primary.soft", value: productPrimarySoft },
-    { token: "primary.solid", value: skin.primary },
-    { token: "primary.strong", value: skin.primaryStrong },
-  ];
-
-  const statusScaleTokens: ReadonlyArray<{ token: string; value: string }> = [
-    { token: "status.success", value: "#47FF9A" },
-    { token: "status.warning", value: "#F3F316" },
-    { token: "status.danger", value: "#E11D48" },
-    { token: "status.info", value: skin.infoColor },
-  ];
+  const selectedPresetAccent = fiweAccents.find((entry) => entry.value === customPrimary)?.token;
 
   return (
     <section className={styles.workspaceRoot} data-theme={canvasTheme} style={skinVariables}>
@@ -238,17 +281,14 @@ function DesignSystemRoute() {
             </span>
           </div>
           <p className={styles.lead}>
-            Detta är produkt-UI för Fiwe (workspace-first), inte midnight-first uttrycket för
-            marknadsföring. Ljust läge ska vara full-bleed arbetsyta och mörkt läge bygger på
-            #0B0F1A-familjen.
+            Ljust läge: workspace-first canvas. Mörkt läge: #0B0F1A-familjen.
           </p>
         </header>
 
         <section className={styles.panel}>
           <div className={styles.controlGrid}>
-            <div>
-              <h2>Skin (primärfärg)</h2>
-              <p>Byter produktens primära CTA-färg och relaterade soft-tints.</p>
+            <article className={styles.controlCard}>
+              <h2>Produktskin</h2>
               <div className={styles.segmented} role="radiogroup" aria-label="Produkt-skin">
                 {productSkins.map((entry) => (
                   <button
@@ -265,11 +305,11 @@ function DesignSystemRoute() {
                   </button>
                 ))}
               </div>
-            </div>
+              <p className={styles.skinNote}>{skin.note}</p>
+            </article>
 
-            <div>
+            <article className={styles.controlCard}>
               <h2>Canvas-tema</h2>
-              <p>Växla mellan ljus och mörk produktcanvas utan att röra Verkstan-shellen.</p>
               <div className={styles.segmented} role="radiogroup" aria-label="Tema">
                 <button
                   type="button"
@@ -294,35 +334,108 @@ function DesignSystemRoute() {
                   Mörkt
                 </button>
               </div>
-              <p className={styles.skinNote}>{skin.note}</p>
-            </div>
+            </article>
+
+            <article className={styles.controlCard}>
+              <h2>Primärfärg</h2>
+              <div className={styles.segmented} role="radiogroup" aria-label="Primärfärg-läge">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={primaryMode === "preset"}
+                  className={`${styles.segmentedItem} ${
+                    primaryMode === "preset" ? styles.segmentedItemActive : ""
+                  }`}
+                  onClick={() => setPrimaryMode("preset")}
+                >
+                  Produktskin
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={primaryMode === "custom"}
+                  className={`${styles.segmentedItem} ${
+                    primaryMode === "custom" ? styles.segmentedItemActive : ""
+                  }`}
+                  onClick={() => setPrimaryMode("custom")}
+                >
+                  Egen
+                </button>
+              </div>
+              <div className={styles.customPickerRow}>
+                {fiweAccents.map((entry) => (
+                  <button
+                    key={entry.token}
+                    type="button"
+                    className={`${styles.accentChip} ${
+                      selectedPresetAccent === entry.token ? styles.accentChipActive : ""
+                    }`}
+                    onClick={() => {
+                      setPrimaryMode("custom");
+                      setCustomPrimary(entry.value);
+                      setCustomPrimaryInput(entry.value);
+                    }}
+                  >
+                    <span
+                      className={styles.accentChipSwatch}
+                      style={{ backgroundColor: entry.value }}
+                      aria-hidden="true"
+                    />
+                    {entry.token}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.customColorRow}>
+                <input
+                  type="color"
+                  value={customPrimary}
+                  aria-label="Välj custom primärfärg"
+                  onChange={(event) => {
+                    setPrimaryMode("custom");
+                    setCustomPrimary(event.target.value.toUpperCase());
+                    setCustomPrimaryInput(event.target.value.toUpperCase());
+                  }}
+                />
+                <input
+                  type="text"
+                  value={customPrimaryInput}
+                  aria-label="Skriv custom hex"
+                  className={styles.hexInput}
+                  onChange={(event) => setCustomPrimaryInput(event.target.value)}
+                  onBlur={() => {
+                    const normalized = normalizeHex(customPrimaryInput);
+                    if (normalized) {
+                      setPrimaryMode("custom");
+                      setCustomPrimary(normalized);
+                      setCustomPrimaryInput(normalized);
+                    } else {
+                      setCustomPrimaryInput(customPrimary);
+                    }
+                  }}
+                />
+              </div>
+            </article>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Färgpalett</h2>
-          <div className={styles.paletteGrid}>
-            <ColorColumn title="Core neutrals (aktivt tema)" tokens={neutralTokens} />
-            <ColorColumn title="Brand accents" tokens={accentTokens} />
-            <ColorColumn title={`Aktiv primärskala (${skin.label})`} tokens={primaryScaleTokens} />
-            <ColorColumn title="Status" tokens={statusScaleTokens} />
+          <h2>Färgskalor</h2>
+          <div className={styles.scaleGrid}>
+            <ScaleStrip title={`Primär ${activePrimary}`} scale={primaryScale} />
+            <ScaleStrip title="Neutrals (aktivt tema)" scale={neutralScale} />
+            <ScaleStrip title="Status" scale={statusScale} />
           </div>
         </section>
 
         <section className={styles.panel}>
           <h2>Typografi</h2>
-          <p className={styles.typographyMeta}>
-            Rethink Sans (Regular / Medium / Bold) med Inter som fallback.
-          </p>
           <div className={styles.typographyStack}>
             <p className={styles.textDisplay}>Display / 36</p>
             <p className={styles.textTitle}>Title / 28</p>
             <p className={styles.textHeading}>Heading / 22</p>
-            <p className={styles.textBody}>
-              Body / 16 — produktgränssnittets standardtext för arbetsytor och paneler.
-            </p>
-            <p className={styles.textSmall}>Small / 14 — hjälptext, metadata och sekundär info.</p>
-            <p className={styles.textLabel}>Label / 12, medium, uppercase.</p>
+            <p className={styles.textBody}>Body / 16</p>
+            <p className={styles.textSmall}>Small / 14</p>
+            <p className={styles.textLabel}>Label / 12</p>
           </div>
         </section>
 
@@ -330,10 +443,9 @@ function DesignSystemRoute() {
           <h2>Knappar</h2>
           <div className={styles.exampleGrid}>
             <article className={styles.exampleCard}>
-              <h3>Varianter och storlekar</h3>
               <div className={styles.buttonRow}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  <Plus size={16} aria-hidden="true" />
+                  <Plus size={16} />
                   Primär
                 </button>
                 <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -345,11 +457,7 @@ function DesignSystemRoute() {
                 <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
                   Ghost
                 </button>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.iconButton}`}
-                  aria-label="Spara utkast"
-                >
+                <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Spara">
                   <Save size={16} />
                 </button>
               </div>
@@ -364,100 +472,53 @@ function DesignSystemRoute() {
                   Inaktiv
                 </button>
               </div>
-            </article>
-
-            <article className={styles.exampleCard}>
-              <h3>Placering i produktflöden</h3>
-              <div className={styles.patternStack}>
-                <div className={styles.toolbarRow}>
-                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                    Filter
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                    <Plus size={16} aria-hidden="true" />
-                    Ny artikel
-                  </button>
-                </div>
-                <div className={styles.formFooter}>
-                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                    Avbryt
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                    Spara ändringar
-                  </button>
-                </div>
-                <div className={styles.destructiveRow}>
-                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                    Ta bort
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                    Behåll post
-                  </button>
-                </div>
+              <p className={styles.caption}>
+                Toolbar: sekundär + primär. Formfooter: högerjusterad CTA. Destruktiv handling hålls separat.
+              </p>
+              <div className={styles.formFooter}>
+                <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
+                  Avbryt
+                </button>
+                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                  Spara ändringar
+                </button>
               </div>
-            </article>
-
-            <article className={styles.guidelineCard}>
-              <h4>Bra</h4>
-              <ul>
-                <li>En tydlig primär CTA per zon (toolbar eller footer).</li>
-                <li>Danger står avskilt och får alltid tydlig konsekvenstext.</li>
-                <li>Sm används i täta tabeller, md i formulär och paneler.</li>
-              </ul>
-            </article>
-
-            <article className={styles.guidelineCard}>
-              <h4>Undvik</h4>
-              <ul>
-                <li>Två primära knappar bredvid varandra i samma beslutspunkt.</li>
-                <li>Att gömma destruktiva val i samma färg som primär.</li>
-                <li>Överdoserad luft som bryter tät produktdensitet.</li>
-              </ul>
+              <div className={styles.destructiveRow}>
+                <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
+                  Ta bort
+                </button>
+                <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                  Bekräfta
+                </button>
+              </div>
             </article>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Ikoner (lucide-react)</h2>
+          <h2>Ikoner</h2>
           <div className={styles.exampleGrid}>
             <article className={styles.exampleCard}>
-              <h3>Storlekar och färgstyrning</h3>
               <div className={styles.iconSizeRow}>
                 {[16, 20, 24].map((size) => (
                   <div key={size} className={styles.iconSizeItem}>
                     <span className={styles.iconSwatch}>
-                      <Settings size={size} aria-hidden="true" />
+                      <Settings size={size} />
                     </span>
                     <span>{size}px</span>
                   </div>
                 ))}
               </div>
-              <p className={styles.inlineHint}>
-                Lucide följer <code>currentColor</code>: färga via textfärg eller primär, aldrig
-                slumpmässiga nyanser.
-              </p>
-            </article>
-
-            <article className={styles.exampleCard}>
-              <h3>Mönster i UI</h3>
               <div className={styles.patternStack}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
                   <Search size={16} />
                   Sök artikel
                 </button>
                 <div className={styles.iconOnlyRow}>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.iconButton}`}
-                    aria-label="Visa notiser"
-                  >
+                  <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Notiser">
                     <Bell size={16} />
                   </button>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.iconButton}`}
-                    aria-label="Öppna inställningar"
-                  >
+                  <button type="button" className={`${styles.button} ${styles.iconButton}`} aria-label="Inställningar">
                     <Settings size={16} />
                   </button>
                 </div>
@@ -483,49 +544,20 @@ function DesignSystemRoute() {
                   </button>
                 </div>
               </div>
+              <p className={styles.caption}>
+                Lucide för CRUD/chrome. Färg styrs via <code>currentColor</code>.
+              </p>
             </article>
 
-            <article className={styles.guidelineCard}>
-              <h4>Bra</h4>
-              <ul>
-                <li>Ikon före etikett i knapp när den tillför kontext.</li>
-                <li>Icon-only får alltid aria-label och tydlig hover/fokus.</li>
-                <li>Radåtgärder hålls i samma ikonfamilj för snabb scanning.</li>
-              </ul>
-            </article>
-
-            <article className={styles.guidelineCard}>
-              <h4>Undvik</h4>
-              <ul>
-                <li>Mix av flera CRUD-ikonbibliotek i samma vy.</li>
-                <li>Ikoner utan text i primära beslutslägen.</li>
-                <li>Hårdkodade färger direkt på ikonens SVG.</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <section className={styles.panel}>
-          <h2>Ikonpaket i Fiwe</h2>
-          <div className={styles.iconPackageGrid}>
             <article className={styles.exampleCard}>
-              <h3>Produkt / domänmarkering</h3>
+              <h3>Ikonpaket</h3>
               <div className={styles.brandMarkRow}>
                 <span className={styles.markBadge}>
                   <span className={styles.markDiamond} aria-hidden="true" />
                   Fiwe mark
                 </span>
-                <span className={styles.brandInlineMark} aria-hidden="true">
-                  <span className={styles.markDiamond} />
-                  <span className={styles.brandBar} />
-                </span>
+                <span className={styles.caption}>Produkt/nav/domän: Fiwe SVG-set</span>
               </div>
-              <p className={styles.inlineHint}>
-                Navigeringsmärken och domänmarkörer använder Fiwe brand-SVG-set.
-              </p>
-            </article>
-            <article className={styles.exampleCard}>
-              <h3>CRUD / chrome</h3>
               <div className={styles.buttonRow}>
                 <span className={styles.chip}>
                   <Plus size={16} />
@@ -540,19 +572,15 @@ function DesignSystemRoute() {
                   Ta bort
                 </span>
               </div>
-              <p className={styles.inlineHint}>
-                CRUD, tabeller och topbar använder Lucide via <code>lucide-react</code>. Ingen
-                andra ikonfamilj ska introduceras för dessa ytor.
-              </p>
+              <p className={styles.caption}>CRUD/chrome: lucide-react.</p>
             </article>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Tabeller (tät listvy)</h2>
+          <h2>Tabeller</h2>
           <div className={styles.exampleGrid}>
             <article className={styles.exampleCard}>
-              <h3>Tät tabell med status och radåtgärder</h3>
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
@@ -563,80 +591,76 @@ function DesignSystemRoute() {
                       </th>
                       <th>Status</th>
                       <th>Ansvarig</th>
+                      <th>Senast</th>
                       <th>Åtgärder</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Attributregel</td>
-                      <td>Klar</td>
-                      <td>Team A</td>
-                      <td>
-                        <div className={styles.tableActionRow}>
-                          <button type="button" className={styles.rowAction} aria-label="Visa attributregel">
-                            <Eye size={16} />
-                          </button>
-                          <button type="button" className={styles.rowAction} aria-label="Redigera attributregel">
-                            <Pencil size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className={styles.tableRowSelected}>
-                      <td>Batch-import</td>
-                      <td>Vald rad</td>
-                      <td>Team B</td>
-                      <td>
-                        <div className={styles.tableActionRow}>
-                          <button type="button" className={styles.rowAction} aria-label="Visa batch-import">
-                            <Eye size={16} />
-                          </button>
-                          <button type="button" className={styles.rowAction} aria-label="Fler val för batch-import">
-                            <MoreHorizontal size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    {tableRows.map((row) => (
+                      <tr key={row.name} className={row.isSelected ? styles.tableRowSelected : undefined}>
+                        <td>{row.name}</td>
+                        <td>
+                          <span
+                            className={`${styles.badge} ${
+                              row.status === "Aktiv"
+                                ? styles.badgeSuccess
+                                : row.status === "Utkast"
+                                  ? styles.badgeWarning
+                                  : row.status === "Fel"
+                                    ? styles.badgeDanger
+                                    : styles.badgeInfo
+                            }`}
+                          >
+                            {row.status}
+                          </span>
+                        </td>
+                        <td>{row.owner}</td>
+                        <td>{row.updated}</td>
+                        <td>
+                          <div className={styles.tableActionRow}>
+                            <button type="button" className={styles.rowAction} aria-label={`Visa ${row.name}`}>
+                              <Eye size={16} />
+                            </button>
+                            <button type="button" className={styles.rowAction} aria-label={`Redigera ${row.name}`}>
+                              <Pencil size={16} />
+                            </button>
+                            <button type="button" className={styles.rowAction} aria-label={`Fler val för ${row.name}`}>
+                              <MoreHorizontal size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
-              <div className={styles.tableEmpty}>
-                <Info size={16} />
-                <span>Tomt läge: inga träffar. Visa filtertips + “Skapa ny”.</span>
+              <div className={styles.tableFooter}>
+                <span>Tomt läge: visa filterorsak + CTA “Skapa ny”.</span>
+                <div className={styles.paginationRow}>
+                  <button type="button" className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}>
+                    Föregående
+                  </button>
+                  <span>Sida 2 / 8</span>
+                  <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
+                    Nästa
+                  </button>
+                </div>
               </div>
-            </article>
-
-            <article className={styles.guidelineCard}>
-              <h4>Bra</h4>
-              <ul>
-                <li>Header visar sorteringscue där sortering är möjlig.</li>
-                <li>Radhover och vald rad skiljs tydligt men diskret.</li>
-                <li>Åtgärdsknappar ligger längst till höger för snabb muskelminne.</li>
-              </ul>
-            </article>
-
-            <article className={styles.guidelineCard}>
-              <h4>Undvik</h4>
-              <ul>
-                <li>Överdrivet höga radhöjder som minskar informationsdensitet.</li>
-                <li>Flera olika ikonstorlekar inom samma action-kolumn.</li>
-                <li>Tomma lägen utan väg framåt.</li>
-              </ul>
             </article>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Övriga vanliga komponenter</h2>
+          <h2>Övriga komponenter</h2>
           <div className={styles.componentsMosaic}>
             <article className={styles.miniCard}>
-              <h3>Input + hjälptext + fel</h3>
+              <h3>Input</h3>
               <label htmlFor="demo-input" className={styles.inputLabel}>
                 Kundnamn
               </label>
               <input id="demo-input" className={styles.textInput} placeholder="Skriv kundnamn..." />
-              <p className={styles.helperText}>Hjälptext: visas alltid under fältet.</p>
-              <p className={styles.errorText}>Fel: Namn måste innehålla minst 3 tecken.</p>
+              <p className={styles.helperText}>Hjälptext under fältet.</p>
+              <p className={styles.errorText}>Fel: minst 3 tecken.</p>
             </article>
 
             <article className={styles.miniCard}>
@@ -654,7 +678,7 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Select / dropdown cue</h3>
+              <h3>Select</h3>
               <button type="button" className={styles.selectButton}>
                 Alla kanaler
                 <ChevronDown size={16} />
@@ -664,7 +688,12 @@ function DesignSystemRoute() {
             <article className={styles.miniCard}>
               <h3>Tabs</h3>
               <div className={styles.tabsRow} role="tablist" aria-label="Demo-tabbar">
-                <button type="button" className={`${styles.tabItem} ${styles.tabItemActive}`} role="tab" aria-selected="true">
+                <button
+                  type="button"
+                  className={`${styles.tabItem} ${styles.tabItemActive}`}
+                  role="tab"
+                  aria-selected="true"
+                >
                   Artiklar
                 </button>
                 <button type="button" className={styles.tabItem} role="tab" aria-selected="false">
@@ -677,14 +706,14 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Toast + banner</h3>
+              <h3>Banner / toast</h3>
               <div className={`${styles.banner} ${styles.bannerInfo}`}>
-                <Info size={16} />
-                Synkning pågår i bakgrunden.
+                <Bell size={16} />
+                Synkning pågår
               </div>
               <div className={`${styles.banner} ${styles.bannerSuccess}`}>
                 <Check size={16} />
-                Artikel publicerad.
+                Artikel publicerad
               </div>
             </article>
 
@@ -696,22 +725,24 @@ function DesignSystemRoute() {
                 <span className={`${styles.badge} ${styles.badgeDanger}`}>Fel</span>
                 <span className={`${styles.badge} ${styles.badgeInfo}`}>Info</span>
               </div>
-              <p className={styles.statusNote}>{infoStatusToken}</p>
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Kortmönster</h3>
+              <h3>Kort</h3>
               <div className={styles.contentCard}>
                 <p className={styles.contentCardTitle}>Importstatus</p>
                 <p className={styles.contentCardMeta}>Senast uppdaterad för 2 min sedan</p>
-                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}
+                >
                   Visa detaljer
                 </button>
               </div>
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Dialog-shell (statisk)</h3>
+              <h3>Dialog-shell</h3>
               <div className={styles.dialogShell}>
                 <div className={styles.dialogHeader}>
                   <strong>Bekräfta borttagning</strong>
@@ -719,7 +750,6 @@ function DesignSystemRoute() {
                     <X size={16} />
                   </button>
                 </div>
-                <p>Detta tar bort kopplingen för vald artikel.</p>
                 <div className={styles.formFooter}>
                   <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
                     Avbryt
@@ -732,7 +762,7 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Sidebar-nav mönster</h3>
+              <h3>Sidebar-nav</h3>
               <nav aria-label="Demo-sidnavigering" className={styles.sidebarNav}>
                 <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
                   <Home size={16} />
@@ -750,112 +780,14 @@ function DesignSystemRoute() {
             </article>
 
             <article className={styles.miniCard}>
-              <h3>Pagination / listdensitet</h3>
+              <h3>Listdensitet</h3>
               <div className={styles.densityList}>
                 <span>01 · SKU-AX194 · Aktiv</span>
                 <span>02 · SKU-AX195 · Utkast</span>
                 <span>03 · SKU-AX196 · Aktiv</span>
-              </div>
-              <div className={styles.paginationRow}>
-                <button type="button" className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}>
-                  Föregående
-                </button>
-                <span>Sida 2 / 8</span>
-                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
-                  Nästa
-                </button>
+                <span>04 · SKU-AX197 · Pausad</span>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section className={styles.panel}>
-          <h2>Animationer i produkt-UI</h2>
-          <div className={styles.animationLayout}>
-            <article className={styles.guidelineCard}>
-              <h4>Riktlinjer</h4>
-              <ul>
-                <li>Animation används för feedback och state-förändring, inte dekoration.</li>
-                <li>UI-transitioner: cirka 120–200ms. Paneler/accordion: max 300ms.</li>
-                <li>Ease-out som standard för in/expand; undvik långa loopar och parallax.</li>
-                <li>Bygg med CSS transitions eller små keyframes, inget tungt ramverk.</li>
-                <li>Respektera alltid <code>prefers-reduced-motion</code>.</li>
-              </ul>
-            </article>
-
-            <div className={styles.animationGrid}>
-              <article className={styles.animationDemo}>
-                <h3>Toast enter (mjuk)</h3>
-                <div className={styles.toastMotionDemo}>
-                  <Check size={16} />
-                  Sparat i arbetsyta
-                </div>
-              </article>
-              <article className={styles.animationDemo}>
-                <h3>Fokusring</h3>
-                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.focusRingDemo}`}>
-                  Fokusdemo
-                </button>
-              </article>
-              <article className={styles.animationDemo}>
-                <h3>Panel expand/collapse</h3>
-                <div className={styles.expandDemo}>
-                  <div className={styles.expandHeader}>
-                    <ChevronRight size={16} />
-                    Filterpanel
-                  </div>
-                  <div className={styles.expandPanel}>
-                    <span>Kanaler: 3 valda</span>
-                    <span>Status: Aktiv + Utkast</span>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section className={styles.panel}>
-          <h2>Korta riktlinjer</h2>
-          <div className={styles.guidelinesGrid}>
-            <div className={styles.guidelineList}>
-              <ul>
-                <li>DNA är låst: färger, typografi och spacing ska upplevas konsekvent.</li>
-                <li>Skin styr primär CTA per produkt (Inteller/Mint, Onboarder/Teal, Shortcut/Lila).</li>
-                <li>Orange diamant är Fiwe-markering, inte generell primär knappfärg.</li>
-                <li>Danger är alltid separat röd (inte samma som produktens primärfärg).</li>
-                <li>Ikoner: Fiwe-mark för produkt/domän, Lucide för CRUD/chrome.</li>
-                <li>Ljust läge är workspace-first full-bleed, inte midnight-marknadsläge.</li>
-                <li>Spacing följer 4-pt-system. Radius: 6-8 för controls, 8-10 för paneler.</li>
-              </ul>
-            </div>
-            <div className={styles.skinTableWrap}>
-              <table className={styles.skinTable}>
-                <thead>
-                  <tr>
-                    <th>Produkt</th>
-                    <th>Primär</th>
-                    <th>Anmärkning</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Inteller</td>
-                    <td>#47FF9A</td>
-                    <td>Orange mark används endast som mark.</td>
-                  </tr>
-                  <tr>
-                    <td>Onboarder</td>
-                    <td>#1FFFF8</td>
-                    <td>Info-ton flyttas till lila för separerad semantik.</td>
-                  </tr>
-                  <tr>
-                    <td>Shortcut / default</td>
-                    <td>#9A4DFF</td>
-                    <td>Lila används för nya produkter som standard-skin.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </section>
       </div>
@@ -863,31 +795,110 @@ function DesignSystemRoute() {
   );
 }
 
-function ColorColumn({
-  title,
-  tokens,
-}: {
-  title: string;
-  tokens: ReadonlyArray<{ token: string; value: string }>;
-}) {
+function ScaleStrip({ title, scale }: { title: string; scale: ReadonlyArray<ScaleStep> }) {
   return (
-    <article className={styles.colorColumn}>
+    <article className={styles.scaleCard}>
       <h3>{title}</h3>
-      <ul className={styles.swatchList}>
-        {tokens.map((entry) => (
-          <li key={`${title}-${entry.token}`} className={styles.swatchItem}>
-            <span
-              className={styles.swatchChip}
-              style={{ backgroundColor: entry.value }}
-              aria-hidden="true"
-            />
-            <div className={styles.swatchMeta}>
-              <span>{entry.token}</span>
-              <code>{entry.value}</code>
-            </div>
-          </li>
+      <div className={styles.scaleStrip} role="list" aria-label={title}>
+        {scale.map((entry) => (
+          <div key={`${title}-${entry.step}`} className={styles.scaleSwatch} role="listitem">
+            <span className={styles.scaleColor} style={{ backgroundColor: entry.value }} aria-hidden="true" />
+            <span className={styles.scaleStep}>{entry.step}</span>
+            <code>{entry.value}</code>
+          </div>
         ))}
-      </ul>
+      </div>
     </article>
   );
+}
+
+function normalizeHex(value: string | null): string | null {
+  if (!value) return null;
+  const candidate = value.trim();
+  const normalized = candidate.startsWith("#") ? candidate : `#${candidate}`;
+  const shortHexMatch = /^#([0-9a-fA-F]{3})$/.exec(normalized);
+  if (shortHexMatch) {
+    const [r, g, b] = shortHexMatch[1].split("");
+    return `#${r}${r}${g}${g}${b}${b}`.toUpperCase();
+  }
+  const longHexMatch = /^#([0-9a-fA-F]{6})$/.exec(normalized);
+  if (longHexMatch) {
+    return `#${longHexMatch[1].toUpperCase()}`;
+  }
+  return null;
+}
+
+function hexToRgb(value: string): RgbColor | null {
+  const normalized = normalizeHex(value);
+  if (!normalized) return null;
+  const hex = normalized.slice(1);
+  const parsed = Number.parseInt(hex, 16);
+  return {
+    r: (parsed >> 16) & 255,
+    g: (parsed >> 8) & 255,
+    b: parsed & 255,
+  };
+}
+
+function rgbToHex(color: RgbColor): string {
+  const toHex = (channel: number) => channel.toString(16).padStart(2, "0");
+  return `#${toHex(color.r)}${toHex(color.g)}${toHex(color.b)}`.toUpperCase();
+}
+
+function mixHex(baseHex: string, targetHex: string, targetWeight: number): string {
+  const base = hexToRgb(baseHex);
+  const target = hexToRgb(targetHex);
+  if (!base || !target) return "#000000";
+  const ratio = Math.max(0, Math.min(1, targetWeight));
+  const mixed: RgbColor = {
+    r: Math.round(base.r * (1 - ratio) + target.r * ratio),
+    g: Math.round(base.g * (1 - ratio) + target.g * ratio),
+    b: Math.round(base.b * (1 - ratio) + target.b * ratio),
+  };
+  return rgbToHex(mixed);
+}
+
+function buildPrimaryScale(primaryHex: string): ReadonlyArray<ScaleStep> {
+  return [
+    { step: "50", value: mixHex("#FFFFFF", primaryHex, 0.12) },
+    { step: "100", value: mixHex("#FFFFFF", primaryHex, 0.22) },
+    { step: "200", value: mixHex("#FFFFFF", primaryHex, 0.34) },
+    { step: "300", value: mixHex("#FFFFFF", primaryHex, 0.48) },
+    { step: "400", value: mixHex("#FFFFFF", primaryHex, 0.68) },
+    { step: "500", value: normalizeHex(primaryHex) ?? primaryHex },
+    { step: "600", value: mixHex(primaryHex, "#000000", 0.1) },
+    { step: "700", value: mixHex(primaryHex, "#000000", 0.2) },
+    { step: "800", value: mixHex(primaryHex, "#000000", 0.32) },
+    { step: "900", value: mixHex(primaryHex, "#000000", 0.46) },
+  ];
+}
+
+function getScaleValue(scale: ReadonlyArray<ScaleStep>, step: string, fallback: string): string {
+  return scale.find((entry) => entry.step === step)?.value ?? fallback;
+}
+
+function relativeLuminance(hexColor: string): number {
+  const rgb = hexToRgb(hexColor);
+  if (!rgb) return 0;
+  const srgb = [rgb.r, rgb.g, rgb.b].map((value) => value / 255);
+  const linear = srgb.map((channel) =>
+    channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+  );
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+}
+
+function contrastRatio(a: string, b: string): number {
+  const first = relativeLuminance(a);
+  const second = relativeLuminance(b);
+  const lighter = Math.max(first, second);
+  const darker = Math.min(first, second);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function getReadableTextColor(backgroundHex: string): string {
+  const darkText = "#0B0F1A";
+  const lightText = "#F8FAFC";
+  return contrastRatio(backgroundHex, darkText) >= contrastRatio(backgroundHex, lightText)
+    ? darkText
+    : lightText;
 }
