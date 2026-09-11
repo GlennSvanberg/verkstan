@@ -1,5 +1,24 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  ArrowUpDown,
+  Bell,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Home,
+  Info,
+  ListTodo,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Save,
+  Search,
+  Settings,
+  Trash2,
+  X,
+} from "lucide-react";
 import styles from "./index.module.css";
 
 export const Route = createFileRoute("/apps/designsystem/")({
@@ -33,6 +52,7 @@ type ThemeTokens = {
   textOnInverse: string;
   borderDefault: string;
   borderStrong: string;
+  textOnAccent: string;
 };
 
 const skinStorageKey = "verkstan.designsystem.skin";
@@ -88,15 +108,16 @@ const accentTokens: ReadonlyArray<{ token: string; value: string }> = [
 
 const lightThemeTokens: ThemeTokens = {
   bgApp: "#FFFFFF",
-  bgSubtle: "#F7F7F2",
-  bgMuted: "#EEEEE6",
-  bgInverse: "#00002C",
-  textPrimary: "#00002C",
-  textSecondary: "#4A4A5C",
-  textMuted: "#8A8A96",
-  textOnInverse: "#FFFEE8",
-  borderDefault: "#E2E2DA",
-  borderStrong: "#C8C8BE",
+  bgSubtle: "#F7F9FC",
+  bgMuted: "#EEF2F8",
+  bgInverse: "#0B0F1A",
+  textPrimary: "#111827",
+  textSecondary: "#334155",
+  textMuted: "#64748B",
+  textOnInverse: "#F8FAFC",
+  borderDefault: "#DCE2EC",
+  borderStrong: "#C2CDD9",
+  textOnAccent: "#0B0F1A",
 };
 
 const darkThemeTokens: ThemeTokens = {
@@ -107,9 +128,10 @@ const darkThemeTokens: ThemeTokens = {
   textPrimary: "#ECF0F8",
   textSecondary: "#CBD5E1",
   textMuted: "#9CA3B6",
-  textOnInverse: "#FFFEE8",
+  textOnInverse: "#0B0F1A",
   borderDefault: "#273449",
   borderStrong: "#334155",
+  textOnAccent: "#0B0F1A",
 };
 
 function DesignSystemRoute() {
@@ -142,7 +164,7 @@ function DesignSystemRoute() {
   );
 
   const infoStatusToken =
-    skin.id === "onboarder" ? "status.info (lila fallback)" : "status.info (teal)";
+    skin.id === "onboarder" ? "status.info blir lila i Onboarder" : "status.info är teal";
 
   const themeTokens = canvasTheme === "dark" ? darkThemeTokens : lightThemeTokens;
   const isDarkTheme = canvasTheme === "dark";
@@ -174,7 +196,7 @@ function DesignSystemRoute() {
     "--status-danger-soft": statusDangerSoft,
     "--status-info": skin.infoColor,
     "--status-info-soft": statusInfoSoft,
-    "--text-on-accent": "#00002C",
+    "--text-on-accent": themeTokens.textOnAccent,
   } as CSSProperties;
 
   const neutralTokens: ReadonlyArray<{ token: string; value: string }> = [
@@ -195,6 +217,7 @@ function DesignSystemRoute() {
     { token: "primary.solid", value: skin.primary },
     { token: "primary.strong", value: skin.primaryStrong },
   ];
+
   const statusScaleTokens: ReadonlyArray<{ token: string; value: string }> = [
     { token: "status.success", value: "#47FF9A" },
     { token: "status.warning", value: "#F3F316" },
@@ -215,8 +238,9 @@ function DesignSystemRoute() {
             </span>
           </div>
           <p className={styles.lead}>
-            Detta är produkt-UI för Fiwe (workspace-first), inte den midnight-first profil som
-            används i marknadsföring.
+            Detta är produkt-UI för Fiwe (workspace-first), inte midnight-first uttrycket för
+            marknadsföring. Ljust läge ska vara full-bleed arbetsyta och mörkt läge bygger på
+            #0B0F1A-familjen.
           </p>
         </header>
 
@@ -287,26 +311,29 @@ function DesignSystemRoute() {
 
         <section className={styles.panel}>
           <h2>Typografi</h2>
-          <p className={styles.typographyMeta}>Rethink Sans (Regular / Medium / Bold) med Inter som fallback.</p>
+          <p className={styles.typographyMeta}>
+            Rethink Sans (Regular / Medium / Bold) med Inter som fallback.
+          </p>
           <div className={styles.typographyStack}>
             <p className={styles.textDisplay}>Display / 36</p>
             <p className={styles.textTitle}>Title / 28</p>
             <p className={styles.textHeading}>Heading / 22</p>
             <p className={styles.textBody}>
-              Body / 16 — Produktgränssnittets standardtext för arbetsytor och paneler.
+              Body / 16 — produktgränssnittets standardtext för arbetsytor och paneler.
             </p>
-            <p className={styles.textSmall}>Small / 14 — Hjälptext, metadata och sekundär info.</p>
+            <p className={styles.textSmall}>Small / 14 — hjälptext, metadata och sekundär info.</p>
             <p className={styles.textLabel}>Label / 12, medium, uppercase.</p>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Komponenter (live tokens)</h2>
-          <div className={styles.componentGrid}>
-            <article className={styles.componentCard}>
-              <h3>Knappar</h3>
+          <h2>Knappar</h2>
+          <div className={styles.exampleGrid}>
+            <article className={styles.exampleCard}>
+              <h3>Varianter och storlekar</h3>
               <div className={styles.buttonRow}>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                  <Plus size={16} aria-hidden="true" />
                   Primär
                 </button>
                 <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
@@ -315,85 +342,475 @@ function DesignSystemRoute() {
                 <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
                   Fara
                 </button>
+                <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
+                  Ghost
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.iconButton}`}
+                  aria-label="Spara utkast"
+                >
+                  <Save size={16} />
+                </button>
+              </div>
+              <div className={styles.buttonRow}>
+                <button type="button" className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonSm}`}>
+                  Sm
+                </button>
+                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                  Md
+                </button>
                 <button type="button" className={`${styles.button} ${styles.buttonPrimary}`} disabled>
                   Inaktiv
                 </button>
               </div>
             </article>
 
-            <article className={styles.componentCard}>
-              <h3>Input + fokus</h3>
-              <label htmlFor="demo-input" className={styles.inputLabel}>
-                Kundnamn
-              </label>
-              <input id="demo-input" className={styles.textInput} placeholder="Skriv kundnamn..." />
+            <article className={styles.exampleCard}>
+              <h3>Placering i produktflöden</h3>
+              <div className={styles.patternStack}>
+                <div className={styles.toolbarRow}>
+                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                    Filter
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                    <Plus size={16} aria-hidden="true" />
+                    Ny artikel
+                  </button>
+                </div>
+                <div className={styles.formFooter}>
+                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
+                    Avbryt
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                    Spara ändringar
+                  </button>
+                </div>
+                <div className={styles.destructiveRow}>
+                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
+                    Ta bort
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
+                    Behåll post
+                  </button>
+                </div>
+              </div>
             </article>
 
-            <article className={styles.componentCard}>
-              <h3>Sidebar-nav</h3>
-              <nav aria-label="Demo-navigering" className={styles.sidebarNav}>
-                <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-                  Översikt
-                </button>
-                <button type="button" className={styles.navItem}>
-                  Ärenden
-                </button>
-                <button type="button" className={styles.navItem}>
-                  Inställningar
-                </button>
-              </nav>
+            <article className={styles.guidelineCard}>
+              <h4>Bra</h4>
+              <ul>
+                <li>En tydlig primär CTA per zon (toolbar eller footer).</li>
+                <li>Danger står avskilt och får alltid tydlig konsekvenstext.</li>
+                <li>Sm används i täta tabeller, md i formulär och paneler.</li>
+              </ul>
             </article>
 
-            <article className={styles.componentCard}>
-              <h3>Tabellrad</h3>
+            <article className={styles.guidelineCard}>
+              <h4>Undvik</h4>
+              <ul>
+                <li>Två primära knappar bredvid varandra i samma beslutspunkt.</li>
+                <li>Att gömma destruktiva val i samma färg som primär.</li>
+                <li>Överdoserad luft som bryter tät produktdensitet.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.panel}>
+          <h2>Ikoner (lucide-react)</h2>
+          <div className={styles.exampleGrid}>
+            <article className={styles.exampleCard}>
+              <h3>Storlekar och färgstyrning</h3>
+              <div className={styles.iconSizeRow}>
+                {[16, 20, 24].map((size) => (
+                  <div key={size} className={styles.iconSizeItem}>
+                    <span className={styles.iconSwatch}>
+                      <Settings size={size} aria-hidden="true" />
+                    </span>
+                    <span>{size}px</span>
+                  </div>
+                ))}
+              </div>
+              <p className={styles.inlineHint}>
+                Lucide följer <code>currentColor</code>: färga via textfärg eller primär, aldrig
+                slumpmässiga nyanser.
+              </p>
+            </article>
+
+            <article className={styles.exampleCard}>
+              <h3>Mönster i UI</h3>
+              <div className={styles.patternStack}>
+                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
+                  <Search size={16} />
+                  Sök artikel
+                </button>
+                <div className={styles.iconOnlyRow}>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.iconButton}`}
+                    aria-label="Visa notiser"
+                  >
+                    <Bell size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.iconButton}`}
+                    aria-label="Öppna inställningar"
+                  >
+                    <Settings size={16} />
+                  </button>
+                </div>
+                <nav className={styles.inlineNav} aria-label="Navigering med ikon och text">
+                  <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
+                    <Home size={16} />
+                    Översikt
+                  </button>
+                  <button type="button" className={styles.navItem}>
+                    <ListTodo size={16} />
+                    Ärenden
+                  </button>
+                </nav>
+                <div className={styles.tableActionRow}>
+                  <button type="button" className={styles.rowAction} aria-label="Visa rad">
+                    <Eye size={16} />
+                  </button>
+                  <button type="button" className={styles.rowAction} aria-label="Redigera rad">
+                    <Pencil size={16} />
+                  </button>
+                  <button type="button" className={styles.rowAction} aria-label="Fler val">
+                    <MoreHorizontal size={16} />
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article className={styles.guidelineCard}>
+              <h4>Bra</h4>
+              <ul>
+                <li>Ikon före etikett i knapp när den tillför kontext.</li>
+                <li>Icon-only får alltid aria-label och tydlig hover/fokus.</li>
+                <li>Radåtgärder hålls i samma ikonfamilj för snabb scanning.</li>
+              </ul>
+            </article>
+
+            <article className={styles.guidelineCard}>
+              <h4>Undvik</h4>
+              <ul>
+                <li>Mix av flera CRUD-ikonbibliotek i samma vy.</li>
+                <li>Ikoner utan text i primära beslutslägen.</li>
+                <li>Hårdkodade färger direkt på ikonens SVG.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.panel}>
+          <h2>Ikonpaket i Fiwe</h2>
+          <div className={styles.iconPackageGrid}>
+            <article className={styles.exampleCard}>
+              <h3>Produkt / domänmarkering</h3>
+              <div className={styles.brandMarkRow}>
+                <span className={styles.markBadge}>
+                  <span className={styles.markDiamond} aria-hidden="true" />
+                  Fiwe mark
+                </span>
+                <span className={styles.brandInlineMark} aria-hidden="true">
+                  <span className={styles.markDiamond} />
+                  <span className={styles.brandBar} />
+                </span>
+              </div>
+              <p className={styles.inlineHint}>
+                Navigeringsmärken och domänmarkörer använder Fiwe brand-SVG-set.
+              </p>
+            </article>
+            <article className={styles.exampleCard}>
+              <h3>CRUD / chrome</h3>
+              <div className={styles.buttonRow}>
+                <span className={styles.chip}>
+                  <Plus size={16} />
+                  Lägg till
+                </span>
+                <span className={styles.chip}>
+                  <Pencil size={16} />
+                  Redigera
+                </span>
+                <span className={styles.chip}>
+                  <Trash2 size={16} />
+                  Ta bort
+                </span>
+              </div>
+              <p className={styles.inlineHint}>
+                CRUD, tabeller och topbar använder Lucide via <code>lucide-react</code>. Ingen
+                andra ikonfamilj ska introduceras för dessa ytor.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.panel}>
+          <h2>Tabeller (tät listvy)</h2>
+          <div className={styles.exampleGrid}>
+            <article className={styles.exampleCard}>
+              <h3>Tät tabell med status och radåtgärder</h3>
               <div className={styles.tableWrap}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Objekt</th>
+                      <th className={styles.sortableHeader}>
+                        Objekt
+                        <ArrowUpDown size={14} />
+                      </th>
                       <th>Status</th>
                       <th>Ansvarig</th>
+                      <th>Åtgärder</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Produktkort</td>
-                      <td>Pågår</td>
+                      <td>Attributregel</td>
+                      <td>Klar</td>
                       <td>Team A</td>
+                      <td>
+                        <div className={styles.tableActionRow}>
+                          <button type="button" className={styles.rowAction} aria-label="Visa attributregel">
+                            <Eye size={16} />
+                          </button>
+                          <button type="button" className={styles.rowAction} aria-label="Redigera attributregel">
+                            <Pencil size={16} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                     <tr className={styles.tableRowSelected}>
-                      <td>Guideline sync</td>
+                      <td>Batch-import</td>
                       <td>Vald rad</td>
                       <td>Team B</td>
+                      <td>
+                        <div className={styles.tableActionRow}>
+                          <button type="button" className={styles.rowAction} aria-label="Visa batch-import">
+                            <Eye size={16} />
+                          </button>
+                          <button type="button" className={styles.rowAction} aria-label="Fler val för batch-import">
+                            <MoreHorizontal size={16} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+              <div className={styles.tableEmpty}>
+                <Info size={16} />
+                <span>Tomt läge: inga träffar. Visa filtertips + “Skapa ny”.</span>
+              </div>
             </article>
 
-            <article className={styles.componentCard}>
-              <h3>Statusbadges</h3>
+            <article className={styles.guidelineCard}>
+              <h4>Bra</h4>
+              <ul>
+                <li>Header visar sorteringscue där sortering är möjlig.</li>
+                <li>Radhover och vald rad skiljs tydligt men diskret.</li>
+                <li>Åtgärdsknappar ligger längst till höger för snabb muskelminne.</li>
+              </ul>
+            </article>
+
+            <article className={styles.guidelineCard}>
+              <h4>Undvik</h4>
+              <ul>
+                <li>Överdrivet höga radhöjder som minskar informationsdensitet.</li>
+                <li>Flera olika ikonstorlekar inom samma action-kolumn.</li>
+                <li>Tomma lägen utan väg framåt.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.panel}>
+          <h2>Övriga vanliga komponenter</h2>
+          <div className={styles.componentsMosaic}>
+            <article className={styles.miniCard}>
+              <h3>Input + hjälptext + fel</h3>
+              <label htmlFor="demo-input" className={styles.inputLabel}>
+                Kundnamn
+              </label>
+              <input id="demo-input" className={styles.textInput} placeholder="Skriv kundnamn..." />
+              <p className={styles.helperText}>Hjälptext: visas alltid under fältet.</p>
+              <p className={styles.errorText}>Fel: Namn måste innehålla minst 3 tecken.</p>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Checkbox + switch</h3>
+              <label className={styles.checkboxRow}>
+                <input type="checkbox" defaultChecked />
+                <span>Visa endast aktiva artiklar</span>
+              </label>
+              <div className={styles.switchRow}>
+                <span>Auto-spara</span>
+                <button type="button" className={styles.switchButton} aria-pressed="true">
+                  <span className={styles.switchThumb} />
+                </button>
+              </div>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Select / dropdown cue</h3>
+              <button type="button" className={styles.selectButton}>
+                Alla kanaler
+                <ChevronDown size={16} />
+              </button>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Tabs</h3>
+              <div className={styles.tabsRow} role="tablist" aria-label="Demo-tabbar">
+                <button type="button" className={`${styles.tabItem} ${styles.tabItemActive}`} role="tab" aria-selected="true">
+                  Artiklar
+                </button>
+                <button type="button" className={styles.tabItem} role="tab" aria-selected="false">
+                  Regler
+                </button>
+                <button type="button" className={styles.tabItem} role="tab" aria-selected="false">
+                  Historik
+                </button>
+              </div>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Toast + banner</h3>
+              <div className={`${styles.banner} ${styles.bannerInfo}`}>
+                <Info size={16} />
+                Synkning pågår i bakgrunden.
+              </div>
+              <div className={`${styles.banner} ${styles.bannerSuccess}`}>
+                <Check size={16} />
+                Artikel publicerad.
+              </div>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Badge / chip</h3>
               <div className={styles.badgeRow}>
-                <span className={`${styles.badge} ${styles.badgeSuccess}`}>Success</span>
-                <span className={`${styles.badge} ${styles.badgeWarning}`}>Warning</span>
-                <span className={`${styles.badge} ${styles.badgeDanger}`}>Danger</span>
+                <span className={`${styles.badge} ${styles.badgeSuccess}`}>Aktiv</span>
+                <span className={`${styles.badge} ${styles.badgeWarning}`}>Utkast</span>
+                <span className={`${styles.badge} ${styles.badgeDanger}`}>Fel</span>
                 <span className={`${styles.badge} ${styles.badgeInfo}`}>Info</span>
               </div>
               <p className={styles.statusNote}>{infoStatusToken}</p>
             </article>
 
-            <article className={styles.componentCard}>
-              <h3>Tomt läge</h3>
-              <div className={styles.emptyCard}>
-                <p className={styles.emptyTitle}>Inga moduler ännu</p>
-                <p className={styles.emptyBody}>
-                  Lägg till en ny modul för att börja skapa innehåll i den här arbetsytan.
-                </p>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  Skapa modul
+            <article className={styles.miniCard}>
+              <h3>Kortmönster</h3>
+              <div className={styles.contentCard}>
+                <p className={styles.contentCardTitle}>Importstatus</p>
+                <p className={styles.contentCardMeta}>Senast uppdaterad för 2 min sedan</p>
+                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
+                  Visa detaljer
                 </button>
               </div>
             </article>
+
+            <article className={styles.miniCard}>
+              <h3>Dialog-shell (statisk)</h3>
+              <div className={styles.dialogShell}>
+                <div className={styles.dialogHeader}>
+                  <strong>Bekräfta borttagning</strong>
+                  <button type="button" className={styles.rowAction} aria-label="Stäng dialog">
+                    <X size={16} />
+                  </button>
+                </div>
+                <p>Detta tar bort kopplingen för vald artikel.</p>
+                <div className={styles.formFooter}>
+                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
+                    Avbryt
+                  </button>
+                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
+                    Ta bort
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Sidebar-nav mönster</h3>
+              <nav aria-label="Demo-sidnavigering" className={styles.sidebarNav}>
+                <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
+                  <Home size={16} />
+                  Översikt
+                </button>
+                <button type="button" className={styles.navItem}>
+                  <ListTodo size={16} />
+                  Ärenden
+                </button>
+                <button type="button" className={styles.navItem}>
+                  <Settings size={16} />
+                  Inställningar
+                </button>
+              </nav>
+            </article>
+
+            <article className={styles.miniCard}>
+              <h3>Pagination / listdensitet</h3>
+              <div className={styles.densityList}>
+                <span>01 · SKU-AX194 · Aktiv</span>
+                <span>02 · SKU-AX195 · Utkast</span>
+                <span>03 · SKU-AX196 · Aktiv</span>
+              </div>
+              <div className={styles.paginationRow}>
+                <button type="button" className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}>
+                  Föregående
+                </button>
+                <span>Sida 2 / 8</span>
+                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}>
+                  Nästa
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.panel}>
+          <h2>Animationer i produkt-UI</h2>
+          <div className={styles.animationLayout}>
+            <article className={styles.guidelineCard}>
+              <h4>Riktlinjer</h4>
+              <ul>
+                <li>Animation används för feedback och state-förändring, inte dekoration.</li>
+                <li>UI-transitioner: cirka 120–200ms. Paneler/accordion: max 300ms.</li>
+                <li>Ease-out som standard för in/expand; undvik långa loopar och parallax.</li>
+                <li>Bygg med CSS transitions eller små keyframes, inget tungt ramverk.</li>
+                <li>Respektera alltid <code>prefers-reduced-motion</code>.</li>
+              </ul>
+            </article>
+
+            <div className={styles.animationGrid}>
+              <article className={styles.animationDemo}>
+                <h3>Toast enter (mjuk)</h3>
+                <div className={styles.toastMotionDemo}>
+                  <Check size={16} />
+                  Sparat i arbetsyta
+                </div>
+              </article>
+              <article className={styles.animationDemo}>
+                <h3>Fokusring</h3>
+                <button type="button" className={`${styles.button} ${styles.buttonSecondary} ${styles.focusRingDemo}`}>
+                  Fokusdemo
+                </button>
+              </article>
+              <article className={styles.animationDemo}>
+                <h3>Panel expand/collapse</h3>
+                <div className={styles.expandDemo}>
+                  <div className={styles.expandHeader}>
+                    <ChevronRight size={16} />
+                    Filterpanel
+                  </div>
+                  <div className={styles.expandPanel}>
+                    <span>Kanaler: 3 valda</span>
+                    <span>Status: Aktiv + Utkast</span>
+                  </div>
+                </div>
+              </article>
+            </div>
           </div>
         </section>
 
@@ -406,9 +823,9 @@ function DesignSystemRoute() {
                 <li>Skin styr primär CTA per produkt (Inteller/Mint, Onboarder/Teal, Shortcut/Lila).</li>
                 <li>Orange diamant är Fiwe-markering, inte generell primär knappfärg.</li>
                 <li>Danger är alltid separat röd (inte samma som produktens primärfärg).</li>
-                <li>Ikoner: Fiwe-mark i produktytor, Lucide går bra för CRUD-gränssnitt.</li>
+                <li>Ikoner: Fiwe-mark för produkt/domän, Lucide för CRUD/chrome.</li>
+                <li>Ljust läge är workspace-first full-bleed, inte midnight-marknadsläge.</li>
                 <li>Spacing följer 4-pt-system. Radius: 6-8 för controls, 8-10 för paneler.</li>
-                <li>Nyare Fiwe-appar byggs i TanStack Start; Onboarder/Inteller kör Next+shadcn idag.</li>
               </ul>
             </div>
             <div className={styles.skinTableWrap}>
@@ -440,14 +857,6 @@ function DesignSystemRoute() {
               </table>
             </div>
           </div>
-          <a
-            href="https://app.notion.com/p/3d7212bf181a81909b44c0c563d80b94"
-            target="_blank"
-            rel="noreferrer"
-            className={styles.specLink}
-          >
-            Läs fullständig spec i Notion
-          </a>
         </section>
       </div>
     </section>
@@ -467,7 +876,11 @@ function ColorColumn({
       <ul className={styles.swatchList}>
         {tokens.map((entry) => (
           <li key={`${title}-${entry.token}`} className={styles.swatchItem}>
-            <span className={styles.swatchChip} style={{ backgroundColor: entry.value }} aria-hidden="true" />
+            <span
+              className={styles.swatchChip}
+              style={{ backgroundColor: entry.value }}
+              aria-hidden="true"
+            />
             <div className={styles.swatchMeta}>
               <span>{entry.token}</span>
               <code>{entry.value}</code>
