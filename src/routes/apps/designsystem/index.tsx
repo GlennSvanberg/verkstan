@@ -50,6 +50,12 @@ type ScaleStep = {
   value: string;
 };
 
+type SpacingToken = {
+  token: string;
+  px: number;
+  use: string;
+};
+
 type RgbColor = {
   r: number;
   g: number;
@@ -75,6 +81,23 @@ const fiweAccents: ReadonlyArray<{ token: string; value: string }> = [
   { token: "pink", value: "#E788CE" },
   { token: "yellow", value: "#F3F316" },
 ];
+
+export const fiweSpacingScale: ReadonlyArray<SpacingToken> = [
+  { token: "space-1", px: 4, use: "hairline" },
+  { token: "space-2", px: 8, use: "icon→label" },
+  { token: "space-3", px: 12, use: "control pad Y" },
+  { token: "space-4", px: 16, use: "default unit" },
+  { token: "space-5", px: 20, use: "comfortable control" },
+  { token: "space-6", px: 24, use: "block/panel" },
+  { token: "space-8", px: 32, use: "section gap desktop" },
+  { token: "space-10", px: 40, use: "large section" },
+  { token: "space-12", px: 48, use: "page sections" },
+];
+
+export const fiweRadiusGuide = {
+  controls: "6–8",
+  cards: "10–12",
+} as const;
 
 const lightThemeTokens: ThemeTokens = {
   bgApp: "#FFFFFF",
@@ -276,6 +299,26 @@ function DesignSystemRoute() {
           </div>
         </header>
 
+        <section className={`${styles.panel} ${styles.sectionPanel} ${styles.agentCallout}`}>
+          <h2>Agents / Skill</h2>
+          <p className={styles.ruleLine}>
+            Agents ska följa skillen <code>fiwe-product-ui</code>.
+          </p>
+          <div className={styles.calloutMeta}>
+            <a
+              href="https://app.notion.com/p/3d7212bf181a81909b44c0c563d80b94"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.calloutLink}
+            >
+              Spec i Notion
+            </a>
+            <span className={styles.calloutChip}>
+              Stack: shadcn/ui + Fiwe-tokens, inget eget komponentbibliotek
+            </span>
+          </div>
+        </section>
+
         <section className={`${styles.panel} ${styles.sectionPanel}`}>
           <h2>Kontroller</h2>
           <div className={styles.controlGrid}>
@@ -410,6 +453,52 @@ function DesignSystemRoute() {
               />
               <span className={styles.ruleLine}>Fiwe palette + valfri hex.</span>
             </div>
+          </div>
+        </section>
+
+        <section className={`${styles.panel} ${styles.sectionPanel}`}>
+          <h2>Spacing</h2>
+          <div className={styles.spacingLayout}>
+            <article className={styles.spacingCard}>
+              <div className={styles.spacingHeader}>
+                <span>Token</span>
+                <span>px</span>
+                <span>Use</span>
+                <span>Visual</span>
+              </div>
+              <div className={styles.spacingRows}>
+                {fiweSpacingScale.map((entry) => (
+                  <div key={entry.token} className={styles.spacingRow}>
+                    <code>{entry.token}</code>
+                    <span>{entry.px}px</span>
+                    <span>{entry.use}</span>
+                    <span className={styles.spacingVisualCell}>
+                      <span
+                        className={styles.spacingRuler}
+                        style={{ "--space-px": String(entry.px) } as CSSProperties}
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <article className={styles.spacingCard}>
+              <h3>Radius</h3>
+              <div className={styles.radiusGrid}>
+                <div className={styles.radiusCard}>
+                  <span className={styles.radiusLabel}>Controls</span>
+                  <span className={styles.radiusValue}>{fiweRadiusGuide.controls}</span>
+                  <div className={styles.radiusSurfaceControl} aria-hidden="true" />
+                </div>
+                <div className={styles.radiusCard}>
+                  <span className={styles.radiusLabel}>Cards</span>
+                  <span className={styles.radiusValue}>{fiweRadiusGuide.cards}</span>
+                  <div className={styles.radiusSurfaceCard} aria-hidden="true" />
+                </div>
+              </div>
+              <p className={styles.ruleLine}>Regel: håll konsekvent radie mellan controls och paneler.</p>
+            </article>
           </div>
         </section>
 
