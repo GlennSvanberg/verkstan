@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LasRouteImport } from './routes/las'
 import { Route as AppsDesignsystemIndexRouteImport } from './routes/apps/designsystem/index'
 import { Route as AppsHelloIndexRouteImport } from './routes/apps/hello/index'
+import { Route as AppsPimvaggenIndexRouteImport } from './routes/apps/pimvaggen/index'
 import { Route as AppsValvIndexRouteImport } from './routes/apps/valv/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const AppsHelloIndexRoute = AppsHelloIndexRouteImport.update({
   path: '/apps/hello/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppsPimvaggenIndexRoute = AppsPimvaggenIndexRouteImport.update({
+  id: '/apps/pimvaggen/',
+  path: '/apps/pimvaggen/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppsValvIndexRoute = AppsValvIndexRouteImport.update({
   id: '/apps/valv/',
   path: '/apps/valv/',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/las': typeof LasRoute
   '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
+  '/apps/pimvaggen/': typeof AppsPimvaggenIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/las': typeof LasRoute
   '/apps/designsystem': typeof AppsDesignsystemIndexRoute
   '/apps/hello': typeof AppsHelloIndexRoute
+  '/apps/pimvaggen': typeof AppsPimvaggenIndexRoute
   '/apps/valv': typeof AppsValvIndexRoute
 }
 export interface FileRoutesById {
@@ -61,20 +69,33 @@ export interface FileRoutesById {
   '/las': typeof LasRoute
   '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
+  '/apps/pimvaggen/': typeof AppsPimvaggenIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/las' | '/apps/designsystem/' | '/apps/hello/' | '/apps/valv/'
+    | '/'
+    | '/las'
+    | '/apps/designsystem/'
+    | '/apps/hello/'
+    | '/apps/pimvaggen/'
+    | '/apps/valv/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/las' | '/apps/designsystem' | '/apps/hello' | '/apps/valv'
+  to:
+    | '/'
+    | '/las'
+    | '/apps/designsystem'
+    | '/apps/hello'
+    | '/apps/pimvaggen'
+    | '/apps/valv'
   id:
     | '__root__'
     | '/'
     | '/las'
     | '/apps/designsystem/'
     | '/apps/hello/'
+    | '/apps/pimvaggen/'
     | '/apps/valv/'
   fileRoutesById: FileRoutesById
 }
@@ -83,6 +104,7 @@ export interface RootRouteChildren {
   LasRoute: typeof LasRoute
   AppsDesignsystemIndexRoute: typeof AppsDesignsystemIndexRoute
   AppsHelloIndexRoute: typeof AppsHelloIndexRoute
+  AppsPimvaggenIndexRoute: typeof AppsPimvaggenIndexRoute
   AppsValvIndexRoute: typeof AppsValvIndexRoute
 }
 
@@ -116,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppsHelloIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apps/pimvaggen/': {
+      id: '/apps/pimvaggen/'
+      path: '/apps/pimvaggen'
+      fullPath: '/apps/pimvaggen/'
+      preLoaderRoute: typeof AppsPimvaggenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/apps/valv/': {
       id: '/apps/valv/'
       path: '/apps/valv'
@@ -131,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   LasRoute: LasRoute,
   AppsDesignsystemIndexRoute: AppsDesignsystemIndexRoute,
   AppsHelloIndexRoute: AppsHelloIndexRoute,
+  AppsPimvaggenIndexRoute: AppsPimvaggenIndexRoute,
   AppsValvIndexRoute: AppsValvIndexRoute,
 }
 export const routeTree = rootRouteImport
