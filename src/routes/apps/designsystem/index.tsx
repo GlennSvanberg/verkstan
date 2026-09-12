@@ -1,21 +1,17 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  AlertTriangle,
-  ArrowUpDown,
   Bell,
-  ChevronDown,
   Eye,
   Home,
   ListTodo,
   MoreHorizontal,
   Pencil,
-  Plus,
-  Save,
   Search,
   Settings,
 } from "lucide-react";
 import styles from "./index.module.css";
+import { DesignsystemViewTabs } from "./shared";
 
 export const Route = createFileRoute("/apps/designsystem/")({
   component: DesignSystemRoute,
@@ -144,29 +140,6 @@ const neutralScaleDark: ReadonlyArray<ScaleStep> = [
   { step: "900", value: "#0B0F1A" },
 ];
 
-const tableRows: ReadonlyArray<{
-  name: string;
-  status: "Aktiv" | "Utkast" | "Pausad" | "Fel" | "Info";
-  owner: string;
-  updated: string;
-  isSelected?: boolean;
-}> = [
-  { name: "Attributregel / title-sync", status: "Aktiv", owner: "Team A", updated: "2m" },
-  { name: "Batch-import / ERP feed", status: "Pausad", owner: "Team B", updated: "8m" },
-  { name: "Prisexport / marketplace", status: "Info", owner: "Team C", updated: "11m" },
-  { name: "Media fallback / CDN", status: "Utkast", owner: "Team A", updated: "22m" },
-  { name: "SKU validator / nordics", status: "Fel", owner: "Team D", updated: "30m" },
-  {
-    name: "Kanalmapping / B2B",
-    status: "Aktiv",
-    owner: "Team B",
-    updated: "37m",
-    isSelected: true,
-  },
-  { name: "Diff-rapport / nightly", status: "Utkast", owner: "Team C", updated: "45m" },
-  { name: "Tagg-normalisering", status: "Aktiv", owner: "Team A", updated: "1h" },
-];
-
 function DesignSystemRoute() {
   const [activeSkin, setActiveSkin] = useState<ProductSkinId>("shortcut");
   const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("light");
@@ -280,16 +253,17 @@ function DesignSystemRoute() {
         <header className={`${styles.panel} ${styles.heroPanel}`}>
           <p className={styles.kicker}>Fiwe Product Design System</p>
           <div className={styles.headerTitleRow}>
-            <h1>Designsystem</h1>
+            <h1>Foundations</h1>
             <span className={styles.markBadge}>
               <span className={styles.markDiamond} aria-hidden="true" />
-              Produktläge
+              Baslager
             </span>
           </div>
           <p className={styles.lead}>
             Regel: produktytor är ljusa; mörkt läge är slate i #0B0F1A-familjen, inte
             marketing-midnight.
           </p>
+          <DesignsystemViewTabs activeView="foundations" />
           <div className={styles.heroMeta}>
             <span>Skin: {skin.label}</span>
             <span>Aktiv primär: {activePrimary}</span>
@@ -482,8 +456,23 @@ function DesignSystemRoute() {
         </section>
 
         <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Färgskalor</h2>
+          <h2>Färg</h2>
           <div className={styles.scaleStack}>
+            <article className={styles.scaleCard}>
+              <h3>Globala accenter</h3>
+              <div className={styles.customPickerRow}>
+                {fiweAccents.map((entry) => (
+                  <span key={entry.token} className={styles.accentChip}>
+                    <span
+                      className={styles.accentChipSwatch}
+                      style={{ backgroundColor: entry.value }}
+                      aria-hidden="true"
+                    />
+                    {entry.token}
+                  </span>
+                ))}
+              </div>
+            </article>
             <ScaleStrip title={`Primär ${activePrimary}`} scale={primaryScale} />
             <ScaleStrip title="Neutrals" scale={neutralScale} />
             <ScaleStrip title="Status" scale={statusScale} />
@@ -501,93 +490,6 @@ function DesignSystemRoute() {
               <p className={styles.textSmall}>Small / 15</p>
               <p className={styles.textLabel}>Label / 12</p>
             </div>
-          </div>
-        </section>
-
-        <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Knappar — användning</h2>
-          <div className={styles.usageGrid}>
-            <article className={styles.exampleCard}>
-              <h3>Toolbar</h3>
-              <div className={styles.toolbarPattern}>
-                <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                  <ChevronDown size={18} />
-                  Filter
-                </button>
-                <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                  Exportera
-                </button>
-                <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                  <Plus size={18} />
-                  Ny artikel
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.button} ${styles.iconButton}`}
-                  aria-label="Toolbar-inställningar"
-                >
-                  <Settings size={18} />
-                </button>
-              </div>
-              <p className={styles.ruleLine}>Regel: en primär CTA per toolbar-zon.</p>
-            </article>
-
-            <article className={styles.exampleCard}>
-              <h3>Formulärfooter</h3>
-              <div className={styles.formPattern}>
-                <label htmlFor="button-pattern-name" className={styles.inputLabel}>
-                  Artikelnamn
-                </label>
-                <input
-                  id="button-pattern-name"
-                  className={styles.textInput}
-                  placeholder="Skriv artikelnamn..."
-                />
-                <label htmlFor="button-pattern-channel" className={styles.inputLabel}>
-                  Kanal
-                </label>
-                <button id="button-pattern-channel" type="button" className={styles.selectButton}>
-                  Alla kanaler
-                  <ChevronDown size={18} />
-                </button>
-                <div className={styles.formFooterSplit}>
-                  <button type="button" className={`${styles.button} ${styles.buttonGhost}`}>
-                    Avbryt
-                  </button>
-                  <div className={styles.formFooterActions}>
-                    <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                      Spara utkast
-                    </button>
-                    <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
-                      <Save size={18} />
-                      Publicera
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <p className={styles.ruleLine}>Regel: formulärfooter har primär CTA till höger, avbryt separat.</p>
-            </article>
-
-            <article className={styles.exampleCard}>
-              <h3>Destruktivt flöde</h3>
-              <div className={styles.dangerPattern}>
-                <div className={styles.dangerCallout}>
-                  <AlertTriangle size={18} />
-                  Radering påverkar publicerad data.
-                </div>
-                <div className={styles.destructiveRow}>
-                  <button type="button" className={`${styles.button} ${styles.buttonDanger}`}>
-                    Ta bort artikel
-                  </button>
-                  <button type="button" className={`${styles.button} ${styles.buttonSecondary}`}>
-                    Bekräfta manuellt
-                  </button>
-                </div>
-              </div>
-              <p className={styles.ruleLine}>
-                Regel: danger är aldrig produktens primära action.
-              </p>
-            </article>
           </div>
         </section>
 
@@ -664,97 +566,6 @@ function DesignSystemRoute() {
           </div>
         </section>
 
-        <section className={`${styles.panel} ${styles.sectionPanel}`}>
-          <h2>Tabeller</h2>
-          <div className={styles.componentStack}>
-            <article className={styles.exampleCard}>
-              <div className={styles.statusLegend}>
-                <span className={`${styles.badge} ${styles.badgeSuccess}`}>Success</span>
-                <span className={`${styles.badge} ${styles.badgeWarning}`}>Warning</span>
-                <span className={`${styles.badge} ${styles.badgeDanger}`}>Danger</span>
-                <span className={`${styles.badge} ${styles.badgeInfo}`}>Info</span>
-                <span className={`${styles.badge} ${styles.badgeNeutral}`}>Neutral</span>
-              </div>
-              <div className={styles.tableWrap}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th className={styles.sortableHeader}>
-                        Objekt
-                        <ArrowUpDown size={14} />
-                      </th>
-                      <th>Status</th>
-                      <th>Ansvarig</th>
-                      <th>Senast</th>
-                      <th>Åtgärder</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tableRows.map((row) => (
-                      <tr
-                        key={row.name}
-                        className={row.isSelected ? styles.tableRowSelected : undefined}
-                      >
-                        <td>{row.name}</td>
-                        <td>
-                          <span className={`${styles.badge} ${statusClassForRow(row.status, styles)}`}>
-                            {row.status}
-                          </span>
-                        </td>
-                        <td>{row.owner}</td>
-                        <td>{row.updated}</td>
-                        <td>
-                          <div className={styles.tableActionRow}>
-                            <button
-                              type="button"
-                              className={styles.rowAction}
-                              aria-label={`Visa ${row.name}`}
-                            >
-                              <Eye size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              className={styles.rowAction}
-                              aria-label={`Redigera ${row.name}`}
-                            >
-                              <Pencil size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              className={styles.rowAction}
-                              aria-label={`Fler val för ${row.name}`}
-                            >
-                              <MoreHorizontal size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className={styles.tableFooter}>
-                <span>Tomt läge: visa filterorsak + CTA “Skapa ny”.</span>
-                <div className={styles.paginationRow}>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.buttonGhost} ${styles.buttonSm}`}
-                  >
-                    Föregående
-                  </button>
-                  <span>Sida 2 / 8</span>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.buttonSecondary} ${styles.buttonSm}`}
-                  >
-                    Nästa
-                  </button>
-                </div>
-              </div>
-              <p className={styles.ruleLine}>Regel: statusfärg betyder semantik, inte dekor.</p>
-            </article>
-          </div>
-        </section>
       </div>
     </section>
   );
@@ -868,13 +679,3 @@ function getReadableTextColor(backgroundHex: string): string {
     : lightText;
 }
 
-function statusClassForRow(
-  status: "Aktiv" | "Utkast" | "Pausad" | "Fel" | "Info",
-  css: Record<string, string>,
-): string {
-  if (status === "Aktiv") return css.badgeSuccess;
-  if (status === "Utkast") return css.badgeWarning;
-  if (status === "Fel") return css.badgeDanger;
-  if (status === "Info") return css.badgeInfo;
-  return css.badgeNeutral;
-}

@@ -65,6 +65,11 @@
   );
 }
 
+.sectionHeaderPanel {
+  padding: 1.4rem;
+  background: color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-app));
+}
+
 .sectionPanel {
   display: block;
 }
@@ -165,6 +170,38 @@
   font-size: 0.84rem;
   display: inline-flex;
   align-items: center;
+}
+
+.viewTabs {
+  margin-top: 0.96rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.viewTab {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  min-height: 38px;
+  padding: 0.34rem 0.82rem;
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.viewTab:hover {
+  border-color: var(--product-primary-strong);
+  color: var(--text-primary);
+}
+
+.viewTabActive {
+  border-color: var(--product-primary-strong);
+  background: var(--product-primary-soft);
+  color: var(--text-primary);
 }
 
 .heroControlLayout {
@@ -712,6 +749,110 @@
   color: color-mix(in srgb, var(--status-danger) 64%, var(--text-primary));
 }
 
+.patternShell {
+  margin-top: 1.2rem;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  background: var(--bg-app);
+  display: grid;
+  grid-template-columns: minmax(170px, 0.28fr) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.patternSidebar {
+  border-right: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-subtle) 82%, var(--bg-app));
+  padding: 1rem 0.86rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.52rem;
+}
+
+.patternMain {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.86rem;
+}
+
+.patternTopbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.patternTopbarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.patternColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.patternCard {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: color-mix(in srgb, var(--bg-subtle) 64%, var(--bg-app));
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.patternCard h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.patternList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.patternList li {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  min-height: 42px;
+  padding: 0.52rem 0.65rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  background: var(--bg-app);
+}
+
+.emptyStatePattern {
+  margin-top: 1.2rem;
+  border: 1px dashed color-mix(in srgb, var(--product-primary) 40%, var(--border-strong));
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--product-primary-soft) 46%, var(--bg-app));
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.emptyStatePattern h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.emptyStateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .iconPackageRow {
   display: flex;
   align-items: center;
@@ -970,12 +1111,22 @@
   .controlGrid,
   .usageGrid,
   .scaleStrip,
-  .typographyStack {
+  .typographyStack,
+  .patternColumns {
     grid-template-columns: 1fr;
   }
 
   .spacingLayout {
     grid-template-columns: 1fr;
+  }
+
+  .patternShell {
+    grid-template-columns: 1fr;
+  }
+
+  .patternSidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border-default);
   }
 
   .spacingHeader,
@@ -996,6 +1147,10 @@
   }
 
   .heroPanel {
+    padding: 1.05rem;
+  }
+
+  .sectionHeaderPanel {
     padding: 1.05rem;
   }
 
@@ -1025,6 +1180,10 @@
   }
 
   .heroPanel {
+    padding: 0.86rem;
+  }
+
+  .sectionHeaderPanel {
     padding: 0.86rem;
   }
 
