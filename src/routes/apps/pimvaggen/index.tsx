@@ -203,6 +203,9 @@ const promptChips: ReadonlyArray<string> = [
   "rensa extra kort",
 ];
 
+const minThinkingMs = 800;
+const maxThinkingMs = 1500;
+
 function PimVaggenRoute() {
   const [wallSchema, setWallSchema] = useState<Array<WallNode>>([...defaultWallSchema]);
   const [wallValue, setWallValue] = useState<WallValue>(defaultWallValue);
@@ -210,6 +213,10 @@ function PimVaggenRoute() {
   const [toastText, setToastText] = useState<string | null>(null);
   const [dqScenarioIndex, setDqScenarioIndex] = useState(0);
   const [showObjectModal, setShowObjectModal] = useState(false);
+  const [thinkingStatus, setThinkingStatus] = useState<string | null>(null);
+  const [busyNodeIds, setBusyNodeIds] = useState<Array<string>>([]);
+
+  const isThinking = thinkingStatus !== null;
 
   useEffect(() => {
     if (!toastText) return;
@@ -221,9 +228,40 @@ function PimVaggenRoute() {
     () => wallSchema.filter((node) => node.parentId === "root"),
     [wallSchema],
   );
+  const busyNodeIdSet = useMemo(() => new Set(busyNodeIds), [busyNodeIds]);
 
   function showToast(message: string): void {
     setToastText(message);
+  }
+
+  function getRootNodeIds(): Array<string> {
+    return wallSchema.filter((node) => node.parentId === "root").map((node) => node.id);
+  }
+
+  function getNodeIdsByType(types: Array<WallNodeType>): Array<string> {
+    return wallSchema
+      .filter((node) => node.parentId === "root" && types.includes(node.type))
+      .map((node) => node.id);
+  }
+
+  async function runWithThinking(
+    statusText: string,
+    targetedNodeIds: Array<string>,
+    runMutation: () => void | Promise<void>,
+  ): Promise<void> {
+    if (isThinking) return;
+    setThinkingStatus(statusText);
+    setBusyNodeIds(targetedNodeIds.length > 0 ? targetedNodeIds : getRootNodeIds());
+    try {
+      const waitMs = minThinkingMs + Math.floor(Math.random() * (maxThinkingMs - minThinkingMs + 1));
+      await new Promise<void>((resolve) => {
+        window.setTimeout(() => resolve(), waitMs);
+      });
+      await runMutation();
+    } finally {
+      setThinkingStatus(null);
+      setBusyNodeIds([]);
+    }
   }
 
   function addOrReplaceNode(nextNode: WallNode): void {
@@ -324,31 +362,50 @@ function PimVaggenRoute() {
     showToast("Väggen uppdaterad: fri prompt gav en ny komponent (mock).");
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const nextPrompt = promptText.trim();
     if (!nextPrompt) return;
-    runPromptMutation(nextPrompt);
-    setPromptText("");
+    await runWithThinking("Uppdaterar väggen...", getRootNodeIds(), () => {
+      runPromptMutation(nextPrompt);
+      setPromptText("");
+    });
   }
 
-  function handleRunDq(): void {
+  async function handleRunDq(): Promise<void> {
+    const targetIds = getNodeIdsByType(["dqCard", "writePreview", "actionPanel"]);
     const nextScenario = (dqScenarioIndex + 1) % dqScenarios.length;
-    setDqScenarioIndex(nextScenario);
-    setWallValue((current) => ({ ...current, dqFindings: dqScenarios[nextScenario] }));
-    showToast("Mockad DQ-körning klar. Väggen uppdaterades med ny exempelutdata.");
+    await runWithThinking("Hämtar DQ-simulering...", targetIds, () => {
+      setDqScenarioIndex(nextScenario);
+      setWallValue((current) => ({ ...current, dqFindings: dqScenarios[nextScenario] }));
+      showToast("Mockad DQ-körning klar. Väggen uppdaterades med ny exempelutdata.");
+    });
   }
 
-  function handleShowMissingEan(): void {
-    runPromptMutation("visa saknade EAN som lista");
+  async function handleShowMissingEan(): Promise<void> {
+    await runWithThinking("Hämtar saknade EAN...", getRootNodeIds(), () => {
+      runPromptMutation("visa saknade EAN som lista");
+    });
   }
 
-  function handleOpenObject(): void {
-    setShowObjectModal(true);
+  async function handleOpenObject(): Promise<void> {
+    const targetIds = getNodeIdsByType(["actionPanel", "changeList"]);
+    await runWithThinking("Öppnar objekt...", targetIds, () => {
+      setShowObjectModal(true);
+      showToast("Objekt öppnat i mockad detaljvy.");
+    });
   }
 
-  function handlePreviewWrite(): void {
-    runPromptMutation("byt DQ-kort mot skrivningspreview");
+  async function handlePreviewWrite(): Promise<void> {
+    await runWithThinking("Bygger skrivningspreview...", getRootNodeIds(), () => {
+      runPromptMutation("byt DQ-kort mot skrivningspreview");
+    });
+  }
+
+  async function handleChipClick(chipPrompt: string): Promise<void> {
+    await runWithThinking("Uppdaterar väggen...", getRootNodeIds(), () => {
+      runPromptMutation(chipPrompt);
+    });
   }
 
   return (
@@ -366,16 +423,34 @@ function PimVaggenRoute() {
           </p>
         </header>
 
+        {isThinking ? (
+          <div className={styles.thinkingBanner} role="status" aria-live="polite">
+            <span className={styles.spinner} aria-hidden="true" />
+            <p>{thinkingStatus}</p>
+          </div>
+        ) : null}
+
         <div className={styles.wall}>
           {wallNodes.map((node) => (
             <WallCard
               key={node.id}
               node={node}
               value={wallValue}
-              onRunDq={handleRunDq}
-              onShowMissingEan={handleShowMissingEan}
-              onOpenObject={handleOpenObject}
-              onPreviewWrite={handlePreviewWrite}
+              isBusy={busyNodeIdSet.has(node.id)}
+              busyStatus={thinkingStatus ?? "Hämtar..."}
+              controlsDisabled={isThinking}
+              onRunDq={() => {
+                void handleRunDq();
+              }}
+              onShowMissingEan={() => {
+                void handleShowMissingEan();
+              }}
+              onOpenObject={() => {
+                void handleOpenObject();
+              }}
+              onPreviewWrite={() => {
+                void handlePreviewWrite();
+              }}
             />
           ))}
         </div>
@@ -392,8 +467,9 @@ function PimVaggenRoute() {
               onChange={(event) => setPromptText(event.target.value)}
               placeholder="Skriv en fråga eller instruktion..."
               className={styles.promptInput}
+              disabled={isThinking}
             />
-            <button type="submit" className={styles.primaryButton}>
+            <button type="submit" className={styles.primaryButton} disabled={isThinking}>
               Uppdatera vägg
             </button>
           </div>
@@ -403,7 +479,10 @@ function PimVaggenRoute() {
                 key={chip}
                 type="button"
                 className={styles.chip}
-                onClick={() => runPromptMutation(chip)}
+                onClick={() => {
+                  void handleChipClick(chip);
+                }}
+                disabled={isThinking}
               >
                 {chip}
               </button>
@@ -445,6 +524,9 @@ function PimVaggenRoute() {
 type WallCardProps = {
   node: WallNode;
   value: WallValue;
+  isBusy: boolean;
+  busyStatus: string;
+  controlsDisabled: boolean;
   onRunDq: () => void;
   onShowMissingEan: () => void;
   onOpenObject: () => void;
@@ -454,14 +536,43 @@ type WallCardProps = {
 function WallCard({
   node,
   value,
+  isBusy,
+  busyStatus,
+  controlsDisabled,
   onRunDq,
   onShowMissingEan,
   onOpenObject,
   onPreviewWrite,
 }: WallCardProps) {
+  const cardClassName = `${styles.card} ${
+    node.type === "kpiRow" ? styles.kpiCard : ""
+  } ${node.type === "actionPanel" ? styles.actionCard : ""}`;
+
+  if (isBusy) {
+    return (
+      <article className={`${cardClassName} ${styles.cardBusy}`} aria-busy="true">
+        <header>
+          <h2>{node.props?.title ?? "Väggkort"}</h2>
+          <p>{demoBannerText}</p>
+        </header>
+        <div className={styles.cardThinking}>
+          <div className={styles.cardThinkingRow}>
+            <span className={styles.spinner} aria-hidden="true" />
+            <strong>{busyStatus}</strong>
+          </div>
+          <div className={styles.skeletonStack}>
+            <span className={styles.skeletonLineLg} />
+            <span className={styles.skeletonLineMd} />
+            <span className={styles.skeletonLineSm} />
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   if (node.type === "kpiRow" && node.$bind === "kpis") {
     return (
-      <article className={`${styles.card} ${styles.kpiCard}`}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "KPI"}</h2>
           <p>{demoBannerText}</p>
@@ -482,7 +593,7 @@ function WallCard({
   if (node.type === "statusFunnel" && node.$bind === "funnel") {
     const maxCount = Math.max(...value.funnel.map((stage) => stage.count));
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Statusflöde"}</h2>
           <p>{demoBannerText}</p>
@@ -509,7 +620,7 @@ function WallCard({
 
   if (node.type === "changeList" && node.$bind === "changes") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Ändringslista"}</h2>
           <p>{demoBannerText}</p>
@@ -534,7 +645,7 @@ function WallCard({
 
   if (node.type === "dqCard" && node.$bind === "dqFindings") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "DQ"}</h2>
           <p>{demoBannerText}</p>
@@ -554,22 +665,42 @@ function WallCard({
 
   if (node.type === "actionPanel") {
     return (
-      <article className={`${styles.card} ${styles.actionCard}`}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Åtgärder"}</h2>
           <p>Stängda mockåtgärder, inga writes</p>
         </header>
         <div className={styles.actionGrid}>
-          <button type="button" className={styles.primaryButton} onClick={onRunDq}>
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={onRunDq}
+            disabled={controlsDisabled}
+          >
             Kör DQ
           </button>
-          <button type="button" className={styles.secondaryButton} onClick={onShowMissingEan}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={onShowMissingEan}
+            disabled={controlsDisabled}
+          >
             Visa saknade EAN
           </button>
-          <button type="button" className={styles.secondaryButton} onClick={onOpenObject}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={onOpenObject}
+            disabled={controlsDisabled}
+          >
             Öppna objekt
           </button>
-          <button type="button" className={styles.secondaryButton} onClick={onPreviewWrite}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={onPreviewWrite}
+            disabled={controlsDisabled}
+          >
             Preview-skrivning
           </button>
         </div>
@@ -579,7 +710,7 @@ function WallCard({
 
   if (node.type === "missingEanList" && node.$bind === "missingEanRows") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Saknade EAN"}</h2>
           <p>{demoBannerText}</p>
@@ -599,7 +730,7 @@ function WallCard({
 
   if (node.type === "masterPulse" && node.$bind === "masterPulse") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "MASTER-läge"}</h2>
           <p>{demoBannerText}</p>
@@ -617,7 +748,7 @@ function WallCard({
 
   if (node.type === "writePreview" && node.$bind === "previewRows") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Preview-skrivning"}</h2>
           <p>Förhandsvisning, ingen commit</p>
@@ -641,7 +772,7 @@ function WallCard({
 
   if (node.type === "promptInsight" && node.$bind === "promptInsight") {
     return (
-      <article className={styles.card}>
+      <article className={cardClassName}>
         <header>
           <h2>{node.props?.title ?? "Prompt-insikt"}</h2>
           <p>{demoBannerText}</p>
