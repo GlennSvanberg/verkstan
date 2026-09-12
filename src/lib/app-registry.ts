@@ -14,6 +14,12 @@ export const appRegistry: ReadonlyArray<MiniappDefinition> = [
     route: "/apps/hello",
   },
   {
+    slug: "pimvaggen",
+    name: "PIM-väggen",
+    summary: "Mockad morgonvägg i Syntux-stil för PIM-insyn och dashboardflöde.",
+    route: "/apps/pimvaggen",
+  },
+  {
     slug: "designsystem",
     name: "Designsystem",
     summary: "Fiwe product UI — tokens, komponenter och theme switcher.",
