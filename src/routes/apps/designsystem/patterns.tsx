@@ -29,8 +29,7 @@ function DesignSystemPatternsRoute() {
             <span className={styles.markBadge}>Komponerade layouter</span>
           </div>
           <p className={styles.lead}>
-            Så här kombineras nav, tabeller och CTA-struktur i verkliga Fiwe-ytor — med samma skin
-            och tokens som i övriga views.
+            Mall för app-shell, innehållskort och tomt läge. Fyll i regler senare.
           </p>
           <DesignsystemViewTabs activeView="patterns" />
           <div className={styles.heroMeta}>
@@ -85,15 +84,15 @@ function DesignSystemPatternsRoute() {
                   <h3>Arbetslista</h3>
                   <ul className={styles.patternList}>
                     <li>
-                      <span>Nordics lansering / 14 objekt</span>
+                      <span>Scenario A / 14 objekt</span>
                       <ChevronRight size={16} />
                     </li>
                     <li>
-                      <span>Media QA / 6 blockerare</span>
+                      <span>Scenario B / 6 blockerare</span>
                       <ChevronRight size={16} />
                     </li>
                     <li>
-                      <span>PIM-sync / 2 fel</span>
+                      <span>Scenario C / 2 fel</span>
                       <ChevronRight size={16} />
                     </li>
                   </ul>
@@ -101,7 +100,7 @@ function DesignSystemPatternsRoute() {
                 <article className={styles.patternCard}>
                   <h3>Snabbinsikter</h3>
                   <p className={styles.ruleLine}>
-                    Topbaren hålls kort så operatören ser tabell och status utan modalflöden.
+                    Regel: (fyll i).
                   </p>
                   <div className={styles.statusLegend}>
                     <span className={`${styles.badge} ${styles.badgeSuccess}`}>Aktiv</span>
@@ -120,8 +119,7 @@ function DesignSystemPatternsRoute() {
             <p className={styles.kicker}>Inställningar / exportkanal</p>
             <h3>Ingen kanal kopplad ännu</h3>
             <p className={styles.ruleLine}>
-              Fiwe visar först varför sidan är tom och ger därefter en tydlig primärknapp för nästa
-              steg i onboarding.
+              När: (fyll i).
             </p>
             <div className={styles.emptyStateActions}>
               <button type="button" className={`${styles.button} ${styles.buttonPrimary}`}>
