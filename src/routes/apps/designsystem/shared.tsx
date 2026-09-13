@@ -146,20 +146,20 @@ export const tableRows: ReadonlyArray<{
   updated: string;
   isSelected?: boolean;
 }> = [
-  { name: "Attributregel / title-sync", status: "Aktiv", owner: "Team A", updated: "2m" },
-  { name: "Batch-import / ERP feed", status: "Pausad", owner: "Team B", updated: "8m" },
-  { name: "Prisexport / marketplace", status: "Info", owner: "Team C", updated: "11m" },
-  { name: "Media fallback / CDN", status: "Utkast", owner: "Team A", updated: "22m" },
-  { name: "SKU validator / nordics", status: "Fel", owner: "Team D", updated: "30m" },
+  { name: "Exempelobjekt 001", status: "Aktiv", owner: "Team A", updated: "2m" },
+  { name: "Exempelobjekt 002", status: "Pausad", owner: "Team B", updated: "8m" },
+  { name: "Exempelobjekt 003", status: "Info", owner: "Team C", updated: "11m" },
+  { name: "Exempelobjekt 004", status: "Utkast", owner: "Team A", updated: "22m" },
+  { name: "Exempelobjekt 005", status: "Fel", owner: "Team D", updated: "30m" },
   {
-    name: "Kanalmapping / B2B",
+    name: "Exempelobjekt 006",
     status: "Aktiv",
     owner: "Team B",
     updated: "37m",
     isSelected: true,
   },
-  { name: "Diff-rapport / nightly", status: "Utkast", owner: "Team C", updated: "45m" },
-  { name: "Tagg-normalisering", status: "Aktiv", owner: "Team A", updated: "1h" },
+  { name: "Exempelobjekt 007", status: "Utkast", owner: "Team C", updated: "45m" },
+  { name: "Exempelobjekt 008", status: "Aktiv", owner: "Team A", updated: "1h" },
 ];
 
 export function DesignsystemViewTabs({ activeView }: { activeView: DesignsystemViewId }) {

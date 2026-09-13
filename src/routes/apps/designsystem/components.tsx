@@ -27,11 +27,10 @@ function DesignSystemComponentsRoute() {
           <p className={styles.kicker}>Fiwe Product Design System</p>
           <div className={styles.headerTitleRow}>
             <h1>Components</h1>
-            <span className={styles.markBadge}>Usage-first i Fiwe-flöden</span>
+            <span className={styles.markBadge}>Template-layouter</span>
           </div>
           <p className={styles.lead}>
-            Endast mönster vi använder i produkten: toolbar-beslut, formulärfooter och
-            semantiska tabeller.
+            Visuella exempel för knappar, formulär och tabeller. Regler fylls i senare.
           </p>
           <DesignsystemViewTabs activeView="components" />
           <div className={styles.heroMeta}>
@@ -67,8 +66,7 @@ function DesignSystemComponentsRoute() {
                 </button>
               </div>
               <p className={styles.ruleLine}>
-                Ny artikel ligger sist i raden eftersom teamen i Fiwe först filtrerar backlogg, sedan
-                skapar nytt.
+                När: (fyll i).
               </p>
             </article>
 
@@ -106,8 +104,7 @@ function DesignSystemComponentsRoute() {
                 </div>
               </div>
               <p className={styles.ruleLine}>
-                I Fiwe används utkast vid ofullständig PIM-data; Publicera visas bara när alla
-                minimifält är satta.
+                Regel: (fyll i).
               </p>
             </article>
 
@@ -128,8 +125,7 @@ function DesignSystemComponentsRoute() {
                 </div>
               </div>
               <p className={styles.ruleLine}>
-                Fiwe kräver separat manuell bekräftelse innan radering för att undvika fel i
-                exporterade flöden.
+                Låst: Danger är inte samma sak som primary.
               </p>
             </article>
           </div>
@@ -205,7 +201,7 @@ function DesignSystemComponentsRoute() {
                 </table>
               </div>
               <div className={styles.tableFooter}>
-                <span>Tomt läge för Fiwe: visa orsaken till tom lista + “Ny artikel”.</span>
+                <span>Tomt läge: (fyll i text + nästa steg).</span>
                 <div className={styles.paginationRow}>
                   <button
                     type="button"
@@ -223,8 +219,7 @@ function DesignSystemComponentsRoute() {
                 </div>
               </div>
               <p className={styles.ruleLine}>
-                Status-badgen matchar driftläget i pipeline-väggen så att teamen läser samma signal i
-                både tabell och dashboard.
+                Undvik: (fyll i).
               </p>
             </article>
           </div>

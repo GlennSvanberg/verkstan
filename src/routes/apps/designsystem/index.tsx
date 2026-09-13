@@ -260,8 +260,7 @@ function DesignSystemRoute() {
             </span>
           </div>
           <p className={styles.lead}>
-            Regel: produktytor är ljusa; mörkt läge är slate i #0B0F1A-familjen, inte
-            marketing-midnight.
+            Låst: Product UI är light / slate dark (#0B0F1A), inte marketing-midnight.
           </p>
           <DesignsystemViewTabs activeView="foundations" />
           <div className={styles.heroMeta}>
@@ -269,6 +268,9 @@ function DesignSystemRoute() {
             <span>Aktiv primär: {activePrimary}</span>
             <span>Tema: {canvasTheme === "light" ? "Ljust" : "Mörkt"}</span>
           </div>
+          <p className={styles.ruleLine}>
+            Låst: Skins = Inteller mint, Onboarder teal, Shortcut purple.
+          </p>
           <div className={styles.heroControlLayout}>
             <div className={styles.controlGrid}>
               <article className={styles.controlCard}>
@@ -408,7 +410,7 @@ function DesignSystemRoute() {
         <section className={`${styles.panel} ${styles.sectionPanel} ${styles.agentCallout}`}>
           <h2>Agents / Skill</h2>
           <p className={styles.ruleLine}>
-            Agents ska följa skillen <code>fiwe-product-ui</code>.
+            Agentstöd: <code>fiwe-product-ui</code> (uppdatera vid behov).
           </p>
           <div className={styles.calloutMeta}>
             <a
@@ -420,7 +422,7 @@ function DesignSystemRoute() {
               Spec i Notion
             </a>
             <span className={styles.calloutChip}>
-              Stack: shadcn/ui + Fiwe-tokens, inget eget komponentbibliotek
+              Låst: shadcn/ui + Fiwe-tokens, inte en forkad komponentlib
             </span>
           </div>
         </section>
@@ -513,7 +515,7 @@ function DesignSystemRoute() {
                 <span className={styles.chip}>CRUD / chrome</span>
               </div>
               <p className={styles.ruleLine}>
-                Regel: Fiwe mark för produkt/domän, Lucide för CRUD/chrome.
+                Låst: lucide-react för CRUD/chrome, Fiwe mark för produkt/domän.
               </p>
             </article>
 
