@@ -142,7 +142,7 @@ const neutralScaleDark: ReadonlyArray<ScaleStep> = [
 
 function DesignSystemRoute() {
   const [activeSkin, setActiveSkin] = useState<ProductSkinId>("shortcut");
-  const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("light");
+  const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("dark");
   const [primaryMode, setPrimaryMode] = useState<PrimaryMode>("preset");
   const [customPrimary, setCustomPrimary] = useState<string>("#F36F16");
   const [customPrimaryInput, setCustomPrimaryInput] = useState<string>("#F36F16");
@@ -260,7 +260,8 @@ function DesignSystemRoute() {
             </span>
           </div>
           <p className={styles.lead}>
-            Låst: Product UI är light / slate dark (#0B0F1A), inte marketing-midnight.
+            Låst: Mörkt och ljust har lika tyngd. Mörkt är standard, och produktens dark använder
+            slate-familjen #0B0F1A (inte marketing-midnight #00002C).
           </p>
           <DesignsystemViewTabs activeView="foundations" />
           <div className={styles.heroMeta}>

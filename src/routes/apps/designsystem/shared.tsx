@@ -180,7 +180,7 @@ export function DesignsystemViewTabs({ activeView }: { activeView: DesignsystemV
 
 export function useDesignsystemState() {
   const [activeSkin, setActiveSkin] = useState<ProductSkinId>("shortcut");
-  const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("light");
+  const [canvasTheme, setCanvasTheme] = useState<CanvasTheme>("dark");
   const [primaryMode, setPrimaryMode] = useState<PrimaryMode>("preset");
   const [customPrimary, setCustomPrimary] = useState<string>("#F36F16");
   const [customPrimaryInput, setCustomPrimaryInput] = useState<string>("#F36F16");
