@@ -14,6 +14,13 @@ export const appRegistry: ReadonlyArray<MiniappDefinition> = [
     route: "/apps/hello",
   },
   {
+    slug: "jevmappning",
+    name: "Jev-mappning",
+    summary: "TypeSafe/Jev väljer bland kandidat-mappningar — inte generativ LLM.",
+    route: "/apps/jevmappning",
+    isLocked: false,
+  },
+  {
     slug: "pimvaggen",
     name: "PIM-väggen",
     summary: "Mockad morgonvägg i Syntux-stil för PIM-insyn och dashboardflöde.",
