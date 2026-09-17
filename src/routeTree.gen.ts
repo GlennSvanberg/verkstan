@@ -15,6 +15,7 @@ import { Route as AppsDesignsystemIndexRouteImport } from './routes/apps/designs
 import { Route as AppsDesignsystemComponentsRouteImport } from './routes/apps/designsystem/components'
 import { Route as AppsDesignsystemPatternsRouteImport } from './routes/apps/designsystem/patterns'
 import { Route as AppsHelloIndexRouteImport } from './routes/apps/hello/index'
+import { Route as AppsJevmappningIndexRouteImport } from './routes/apps/jevmappning/index'
 import { Route as AppsPimvaggenIndexRouteImport } from './routes/apps/pimvaggen/index'
 import { Route as AppsValvIndexRouteImport } from './routes/apps/valv/index'
 
@@ -50,6 +51,11 @@ const AppsHelloIndexRoute = AppsHelloIndexRouteImport.update({
   path: '/apps/hello/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppsJevmappningIndexRoute = AppsJevmappningIndexRouteImport.update({
+  id: '/apps/jevmappning/',
+  path: '/apps/jevmappning/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppsPimvaggenIndexRoute = AppsPimvaggenIndexRouteImport.update({
   id: '/apps/pimvaggen/',
   path: '/apps/pimvaggen/',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/apps/designsystem/patterns': typeof AppsDesignsystemPatternsRoute
   '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
+  '/apps/jevmappning/': typeof AppsJevmappningIndexRoute
   '/apps/pimvaggen/': typeof AppsPimvaggenIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/apps/designsystem/patterns': typeof AppsDesignsystemPatternsRoute
   '/apps/designsystem': typeof AppsDesignsystemIndexRoute
   '/apps/hello': typeof AppsHelloIndexRoute
+  '/apps/jevmappning': typeof AppsJevmappningIndexRoute
   '/apps/pimvaggen': typeof AppsPimvaggenIndexRoute
   '/apps/valv': typeof AppsValvIndexRoute
 }
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/apps/designsystem/patterns': typeof AppsDesignsystemPatternsRoute
   '/apps/designsystem/': typeof AppsDesignsystemIndexRoute
   '/apps/hello/': typeof AppsHelloIndexRoute
+  '/apps/jevmappning/': typeof AppsJevmappningIndexRoute
   '/apps/pimvaggen/': typeof AppsPimvaggenIndexRoute
   '/apps/valv/': typeof AppsValvIndexRoute
 }
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/apps/designsystem/patterns'
     | '/apps/designsystem/'
     | '/apps/hello/'
+    | '/apps/jevmappning/'
     | '/apps/pimvaggen/'
     | '/apps/valv/'
   fileRoutesByTo: FileRoutesByTo
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/apps/designsystem/patterns'
     | '/apps/designsystem'
     | '/apps/hello'
+    | '/apps/jevmappning'
     | '/apps/pimvaggen'
     | '/apps/valv'
   id:
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/apps/designsystem/patterns'
     | '/apps/designsystem/'
     | '/apps/hello/'
+    | '/apps/jevmappning/'
     | '/apps/pimvaggen/'
     | '/apps/valv/'
   fileRoutesById: FileRoutesById
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   AppsDesignsystemPatternsRoute: typeof AppsDesignsystemPatternsRoute
   AppsDesignsystemIndexRoute: typeof AppsDesignsystemIndexRoute
   AppsHelloIndexRoute: typeof AppsHelloIndexRoute
+  AppsJevmappningIndexRoute: typeof AppsJevmappningIndexRoute
   AppsPimvaggenIndexRoute: typeof AppsPimvaggenIndexRoute
   AppsValvIndexRoute: typeof AppsValvIndexRoute
 }
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppsHelloIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apps/jevmappning/': {
+      id: '/apps/jevmappning/'
+      path: '/apps/jevmappning'
+      fullPath: '/apps/jevmappning/'
+      preLoaderRoute: typeof AppsJevmappningIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/apps/pimvaggen/': {
       id: '/apps/pimvaggen/'
       path: '/apps/pimvaggen'
@@ -204,18 +224,10 @@ const rootRouteChildren: RootRouteChildren = {
   AppsDesignsystemPatternsRoute: AppsDesignsystemPatternsRoute,
   AppsDesignsystemIndexRoute: AppsDesignsystemIndexRoute,
   AppsHelloIndexRoute: AppsHelloIndexRoute,
+  AppsJevmappningIndexRoute: AppsJevmappningIndexRoute,
   AppsPimvaggenIndexRoute: AppsPimvaggenIndexRoute,
   AppsValvIndexRoute: AppsValvIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
